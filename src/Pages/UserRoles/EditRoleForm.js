@@ -301,7 +301,7 @@ const EditRoleForm = () => {
 // </div>
 
 <div
-  className={`main-container ${isExpanded ? 'expanded' : 'collapsed'}`}
+  className={`main-container`}
 >
 
   <div className="p-6 rounded-lg ">

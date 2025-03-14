@@ -1,0 +1,9 @@
+:root {
+  --primary-color: #4f46e5; /* Indigo */
+  --secondary-color: #1f2937; /* Dark Gray */
+  --accent-color: #f59e0b; /* Yellow */
+  --background-color: #f3f4f6; /* Light Gray */
+  --text-color: #111827; /* Dark Text */
+  --error-color: #ef4444; /* Red */
+}
+

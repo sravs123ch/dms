@@ -8,20 +8,15 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import TableFooter from "@mui/material/TableFooter";
 import TablePagination from "@mui/material/TablePagination";
-
-import { FaPlus, FaTable } from "react-icons/fa";
-import * as XLSX from "xlsx";
+import { FaPlus } from "react-icons/fa";
 import { AiOutlineEdit, AiOutlineDelete } from "react-icons/ai";
 import { IoIosSearch } from "react-icons/io";
 import axios from "axios";
 import { UserContext } from "../../Context/userContext";
-import { Combobox } from "@headlessui/react";
-import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import UserIcone from "../../assests/Images/user-png-33842.png";
 import { MdOutlineCancel } from "react-icons/md";
 import {
   GETALLUSERS_API,
-  GETALLUSERSBYID_API,
   DELETEUSERSBYID_API,
 } from "../../Constants/apiRoutes";
 import "../../style.css";
@@ -30,9 +25,10 @@ import {
   StyledTableRow,
   TablePaginationActions,
 } from "../../Components/CustomTablePagination";
-
 import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
 import { DataContext } from "../../Context/DataContext";
+import * as XLSX from "xlsx";
+import { FaTable } from "react-icons/fa";
 
 function User() {
   const [users, setUsers] = useState([]);
@@ -42,29 +38,14 @@ function User() {
   const [searchName, setSearchName] = useState("");
   const navigate = useNavigate();
   const { setUserDetails } = useContext(UserContext);
-
   const [isLoading, setIsLoading] = useState(false);
-
   const { storesData } = useContext(DataContext);
   const [stores, setStores] = useState([]);
   const [selectedStore, setSelectedStore] = useState("");
-  // useEffect(() => {
-  //   if (storesData) {
-  //     setStores(storesData);
-  //     // Automatically set selectedStore if there's only one store
-  //     if (storesData.length === 1) {
-  //       setSelectedStore(storesData[0]);
-  //     }
-  //   }
-  // }, [storesData]);
-  const getStoreIDs = (stores) => {
-    return stores.map((store) => store.StoreID); // Return an array of StoreIDs
-  };
 
   useEffect(() => {
     if (storesData) {
       setStores(storesData);
-      // Automatically set selectedStore if there's only one store
       if (storesData.length === 1) {
         setSelectedStore(storesData[0]);
       }
@@ -73,8 +54,9 @@ function User() {
 
   const handleStoreChange = (newStore) => {
     setSelectedStore(newStore);
-    setPage(0); // Reset to first page when store changes
+    setPage(0);
   };
+
   const getAllUsers = async (pageNum, pageSize, search = "", storeIDs = []) => {
     try {
       const token = localStorage.getItem("token");
@@ -113,10 +95,9 @@ function User() {
     setIsLoading(true);
     try {
       const storeIDs = selectedStore
-        ? [selectedStore.StoreID] // Wrap single StoreID in an array
-        : getStoreIDs(stores); // Get array of StoreIDs
+        ? [selectedStore.StoreID]
+        : stores.map((store) => store.StoreID);
       if (!storeIDs || storeIDs.length === 0) {
-        console.warn("No StoreIDs provided. Skipping network call.");
         setIsLoading(false);
         return;
       }
@@ -125,7 +106,6 @@ function User() {
         rowsPerPage,
         searchName,
         storeIDs
-        // selectedStore?.StoreID || "" // Pass the selected store ID
       );
       setUsers(users);
       setTotalUsers(totalCount);
@@ -145,44 +125,6 @@ function User() {
     setPage(0);
   };
 
-  const getUserById = async (userId) => {
-    const token = localStorage.getItem("token");
-    setIsLoading(true); // Set isLoading to true before making the network call
-    try {
-      const response = await axios.get(`${GETALLUSERSBYID_API}/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Pass token in the headers
-          "Content-Type": "application/json",
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching user:", error);
-      throw error;
-    } finally {
-      setIsLoading(false); // Set isLoading to false in the finally block
-    }
-  };
-
-  const deleteUserById = async (userId) => {
-    const token = localStorage.getItem("token");
-    setIsLoading(true); // Set isLoading to true before making the network call
-    try {
-      const response = await axios.delete(`${DELETEUSERSBYID_API}/${userId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`, // Pass token in the headers
-          "Content-Type": "application/json",
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error deleting user:", error);
-      throw error;
-    } finally {
-      setIsLoading(false); // Set isLoading to false in the finally block
-    }
-  };
-
   const handleEditClick = (userId) => {
     navigate(`/userform/${userId}`);
   };
@@ -191,7 +133,7 @@ function User() {
     setIsLoading(true);
     try {
       await deleteUserById(userId);
-      fetchUsers(); // Refresh the user list after deletion
+      fetchUsers();
     } catch (error) {
       console.error("Error deleting user:", error);
     } finally {
@@ -199,11 +141,31 @@ function User() {
     }
   };
 
+  const deleteUserById = async (userId) => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
+      }
+
+      await axios.delete(`${DELETEUSERSBYID_API}/${userId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      console.log("User deleted successfully");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+      throw error;
+    }
+  };
+
   const handleAddUserClick = () => {
     setUserDetails(null);
     navigate("/userform/new");
   };
-
   const exportToExcel = (data, fileName) => {
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -220,262 +182,159 @@ function User() {
     }
   };
 
-  // Search function
   const searchItems = (searchValue) => {
     setSearchName(searchValue);
   };
-  // Retrieve the navbar-collapsed value from localStorage
-  const storedCollapsed = localStorage.getItem("navbar-collapsed") === "true";
-
-  // Set the initial state based on the stored value
-  const [isExpanded, setIsExpanded] = useState(!storedCollapsed);
-
-  useEffect(() => {
-    // Set the initial state based on the localStorage value
-    const storedCollapsed = localStorage.getItem("navbar-collapsed");
-    if (storedCollapsed !== null) {
-      setIsExpanded(storedCollapsed === "false");
-    }
-  }, []); // Only run this once on component mount
 
   return (
     <div className="main-container">
-    {/* // <div className={`main-container ${isExpanded ? "expanded" : "collapsed"}`}> */}
-      <div className="body-container">
-        <h2 className="heading">Users</h2>
-        <div className="search-button-group">
-          <ul className="button-list">
-            <li>
-              <button
-                type="button"
-                className="action-button"
-                onClick={handleAddUserClick}
-              >
-                <FaPlus aria-hidden="true" className="-ml-0.5 h-4 w-4" />
-                Add Users
-              </button>
-            </li>
-            <li>
-              <button
-                type="button"
-                className="action-button"
-                onClick={handleExportUsersData}
-              >
-                <FaTable aria-hidden="true" className="-ml-0.5 h-4 w-4" />
-                Export Users
-              </button>
-            </li>
-          </ul>
+      {isLoading && <LoadingAnimation />}
+      <div className="mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <div className="body-container">
+          <h2 className="heading text-brown-700">User's</h2>
+
+          <div className="search-button-group">
+            <ul className="button-list">
+              <li>
+                <button
+                  type="button"
+                  className="action-button"
+                  onClick={handleAddUserClick}
+                >
+                  <FaPlus aria-hidden="true" className="icon" />
+                  Add User
+                </button>
+              </li>
+              <li>
+                <button
+                  type="button"
+                  className="action-button"
+                  onClick={handleExportUsersData}
+                >
+                  <FaTable aria-hidden="true" className="icon" />
+                  Export Users
+                </button>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
-      <div className="flex-container">
-        <div className="flex-container">
-          <div className="search-container-c-u">
+        <div className="flex items-center mb-4">
+          <div className="relative w-full max-w-xs">
             <input
-              id="searchName"
               type="text"
-              placeholder="Search by Name or Email or Mobile"
+              placeholder="Search"
               value={searchName}
               onChange={(e) => searchItems(e.target.value)}
-              className="search-input"
+              className="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:border-blue-500"
             />
-            <div className="search-icon-container-c-u">
-              <IoIosSearch />
-            </div>
-          </div>
-          <div className="combobox-container flex items-center">
-            <Combobox value={selectedStore} onChange={setSelectedStore}>
-              <div className="combobox-wrapper h-[40px]">
-                <Combobox.Input
-                  className={`combobox-input w-full h-full ${selectedStore}`}
-                  displayValue={(store) =>
-                    store?.StoreName || "Select Store ID"
-                  }
-                  placeholder="Select Store Name"
-                  readOnly={storesData.length === 1}
-                />
-                {storesData.length > 1 && (
-                  <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </Combobox.Button>
-                )}
-                {storesData.length > 1 && (
-                  <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto bg-white border border-gray-300 rounded-md shadow-lg">
-                    {/* Add "Select Store ID" option */}
-                    <Combobox.Option
-                      key="select-store-id"
-                      value={{ StoreID: null, StoreName: "Select Store ID" }}
-                      className={({ active }) =>
-                        `cursor-pointer select-none relative p-2 ${
-                          active ? "bg-blue-500 text-white" : "text-gray-900"
-                        }`
-                      }
-                    >
-                      {({ selected }) => (
-                        <>
-                          <span
-                            className={
-                              selected ? "font-semibold" : "font-normal"
-                            }
-                          >
-                            Select Store ID
-                          </span>
-                          {selected && (
-                            <CheckIcon
-                              className="h-5 w-5 text-white absolute right-2"
-                              aria-hidden="true"
-                            />
-                          )}
-                        </>
-                      )}
-                    </Combobox.Option>
-                    {/* Render all store options */}
-                    {storesData.map((store) => (
-                      <Combobox.Option
-                        key={store.StoreID}
-                        value={store}
-                        className={({ active }) =>
-                          `cursor-pointer select-none relative p-2 ${
-                            active ? "bg-blue-500 text-white" : "text-gray-900"
-                          }`
-                        }
-                      >
-                        {({ selected }) => (
-                          <>
-                            <span
-                              className={
-                                selected ? "font-semibold" : "font-normal"
-                              }
-                            >
-                              {store.StoreName}
-                            </span>
-                            {selected && (
-                              <CheckIcon
-                                className="h-5 w-5 text-white absolute right-2"
-                                aria-hidden="true"
-                              />
-                            )}
-                          </>
-                        )}
-                      </Combobox.Option>
-                    ))}
-                  </Combobox.Options>
-                )}
-              </div>
-            </Combobox>
+            <IoIosSearch className="absolute left-3 top-3 text-gray-400" />
           </div>
         </div>
-      </div>
-
-      <TableContainer component={Paper} className="mt-4">
-        <Table>
-          <TableHead>
-            <TableRow>
-              <StyledTableCell>Name</StyledTableCell>
-              <StyledTableCell>Email</StyledTableCell>
-              <StyledTableCell>Mobile No</StyledTableCell>
-              <StyledTableCell>Roles</StyledTableCell>
-              <StyledTableCell>Gender</StyledTableCell>
-              <StyledTableCell>Actions</StyledTableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {isLoading ? ( // Show loading animation while fetching
-              <StyledTableRow></StyledTableRow>
-            ) : (
-              users.map((person) => (
-                <StyledTableRow key={person.UserID}>
+        <TableContainer component={Paper}>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <StyledTableCell>Name</StyledTableCell>
+                <StyledTableCell>Mobile</StyledTableCell>
+                <StyledTableCell>Roles</StyledTableCell>
+                <StyledTableCell>Gender</StyledTableCell>
+                <StyledTableCell>Actions</StyledTableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {users.map((user) => (
+                <StyledTableRow key={user.UserID}>
                   <StyledTableCell>
-                    <div className="flex flex-col md:flex-col lg:flex-row items-center lg:space-x-2 space-y-2 lg:space-y-0 w-full">
+                    <div className="flex items-center">
                       <img
-                        src={person.ProfileImage || UserIcone}
+                        src={user.ProfileImage || UserIcone}
                         alt="Profile"
-                        className="h-10 w-10 rounded-full object-cover"
+                        className="h-10 w-10 rounded-full object-cover mr-2"
                       />
-                      <div className="flex flex-col sm:flex-row sm:space-x-2  w-full md:pr-8 lg:pr-8">
-                        <span>{person.FirstName}</span>
-                        <span>{person.LastName}</span>
-                      </div>
+                      <span>{`${user.FirstName} ${user.LastName}`}</span>
                     </div>
                   </StyledTableCell>
 
-                  <StyledTableCell className="whitespace-nowrap overflow-hidden text-ellipsis">
-                    {person.Email}
-                  </StyledTableCell>
-
-                  <StyledTableCell>{person.PhoneNumber}</StyledTableCell>
-
-                  <StyledTableCell>{person.RoleName}</StyledTableCell>
-
+                  <StyledTableCell>{user.PhoneNumber}</StyledTableCell>
                   <StyledTableCell>
                     <span
-                      className={`w-[68px] text-center gender-pill ${
-                        person.Gender === "M"
-                          ? "gender-male"
-                          : person.Gender === "F"
-                          ? "gender-female"
-                          : "gender-na"
-                      }`}
+                      className={`inline-block min-w-[100px] text-center py-1 px-3 rounded-full text-sm font-medium ${getRoleColor(
+                        user.RoleName
+                      )}`}
                     >
-                      {person.Gender === null
-                        ? "N/A"
-                        : person.Gender === "M"
-                        ? person.Gender + "ale"
-                        : person.Gender + "emale"}
+                      {user.RoleName}
                     </span>
                   </StyledTableCell>
-
                   <StyledTableCell>
-                    <div className="button-container">
+                    {user.Gender === "M" ? "Male" : "Female"}
+                  </StyledTableCell>
+
+                  <StyledTableCell colSpan={2}>
+                    <div className="flex space-x-2">
                       <button
                         type="button"
-                        onClick={() => handleEditClick(person.UserID)}
-                        className="button edit-button"
+                        onClick={() => handleEditClick(user.UserID)}
+                        className="button edit-button "
                       >
-                        <AiOutlineEdit aria-hidden="true" className="h-4 w-4" />
+                        <AiOutlineEdit
+                          aria-hidden="true"
+                          className="h-4 w-4 mr-1"
+                        />
                         Edit
                       </button>
 
                       <button
                         type="button"
-                        onClick={() => handleDeleteClick(person.UserID)}
-                        className="button delete-button"
+                        onClick={() => handleDeleteClick(user.UserID)}
+                        className="button delete-button "
                       >
                         <MdOutlineCancel
                           aria-hidden="true"
-                          className="h-4 w-4"
+                          className="h-4 w-4 mr-1"
                         />
                         Delete
                       </button>
                     </div>
                   </StyledTableCell>
                 </StyledTableRow>
-              ))
-            )}
-          </TableBody>
-          <TableFooter>
-            <TableRow>
-              <TablePagination
-                rowsPerPageOptions={[10, 20, 25]}
-                colSpan={6}
-                count={totalUsers}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
-                ActionsComponent={TablePaginationActions}
-              />
-            </TableRow>
-          </TableFooter>
-        </Table>
-      </TableContainer>
-
-      {isLoading && <LoadingAnimation />}
+              ))}
+            </TableBody>
+            <TableFooter>
+              <TableRow>
+                <TablePagination
+                  rowsPerPageOptions={[10, 20, 25]}
+                  colSpan={6}
+                  count={totalUsers}
+                  rowsPerPage={rowsPerPage}
+                  page={page}
+                  onPageChange={handleChangePage}
+                  onRowsPerPageChange={handleChangeRowsPerPage}
+                  ActionsComponent={TablePaginationActions}
+                />
+              </TableRow>
+            </TableFooter>
+          </Table>
+        </TableContainer>
+      </div>
     </div>
   );
 }
+
+const getRoleColor = (role) => {
+  switch (role?.toLowerCase()) {
+    case "admin":
+      return "bg-[#FF3B3066] text-[#FF2D55]";
+    case "user":
+      return "bg-[#34C75966] text-[#34C759]";
+    case "department 1":
+      return "bg-[#FFF4E5] text-[#FFA113]";
+    case "department 2":
+      return "bg-[#E8FFE3] text-[#57CA22]";
+    case "department 3":
+      return "bg-[#F4E5FF] text-[#A113FF]";
+    default:
+      return "bg-gray-100 text-gray-700";
+  }
+};
 
 export default User;

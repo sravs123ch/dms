@@ -19,17 +19,52 @@ import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import Lottie from "lottie-react";
-import animationData from "../../assests/animations/Animation.json";
-import animationData1 from "../../assests/animations/Animation-1.json";
+import animation from "../../assests/animations/Animation-1.json";
+import DocumentBg from "../../assets/images/document-bg.svg";
+import B2YLogo from "../../assests/Images/b2y-Logo.png";
+import { HiMail, HiLockClosed } from "react-icons/hi";
+import {
+  HiDocument,
+  HiPencil,
+  HiUsers,
+  HiShieldCheck,
+  HiDocumentDuplicate,
+  HiPencilAlt,
+} from "react-icons/hi";
+import DealVisorLogo from "../../assests/Images/Deal visor.png";
+
 const Login = () => {
   const navigate = useNavigate();
-  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const { login } = useAuth();
   const [isStoreDataLoading, setIsStoreDataLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+
+  const features = [
+    {
+      icon: "📄",
+      title: "Document Upload",
+      description: "Securely upload and manage your documents",
+    },
+    {
+      icon: "✍️",
+      title: "Digital Signatures",
+      description: "Sign documents electronically",
+    },
+    {
+      icon: "👥",
+      title: "Collaboration",
+      description: "Review and approve documents together",
+    },
+    {
+      icon: "🔒",
+      title: "Secure Storage",
+      description: "Keep your documents safe and organized",
+    },
+  ];
 
   // Fetch data from the APIs if not present in local storage
   const fetchApiData = async () => {
@@ -106,7 +141,7 @@ const Login = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ Email: userName, Password: password }),
+        body: JSON.stringify({ Email: email, Password: password }),
       });
 
       const data = await response.json();
@@ -165,146 +200,142 @@ const Login = () => {
   };
 
   return (
-    <>
-      <div className="flex min-h-full p-0 m-0 flex-1 bg-gray-100">
-        {(isLoading || isStoreDataLoading) && <LoadingAnimation />}
-        <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-28 h-[100vh]">
-          <div className="mx-auto w-full max-w-sm lg:w-[350px] xl:w-[450px] rounded-md p-6 shadow-sm bg-white">
-            <div className="flex justify-center rounded-md mb-8 ">
-              <img
-                alt="Your Company"
-                src={Logo1}
-                className="h-20 w-[90%] x rounded-lg ml-6"
-              />
-            </div>
-            <div>
-              <div className="flex justify-center items-center h-8">
-                <h2 className="text-2xl font-bold leading-9 tracking-tight text-[#632e0f] items-center">
-                  Login
-                </h2>
-              </div>
-            </div>
+    <div className="min-h-screen relative flex overflow-hidden">
+      {/* Background Pattern with Gradient */}
+      <div className="absolute inset-0 z-0">
+        <div
+          className="absolute inset-0 bg-gradient-to-br from-[#8B4513] via-[#632e0f] to-[#301607] opacity-95"
+          style={{
+            background:
+              "linear-gradient(135deg, #8B4513 0%, #632e0f 50%, #301607 100%)",
+          }}
+        />
 
-            <div className="mt-10">
-              <div>
-                <form className="space-y-6">
+        {/* Animation Layer - Using GIF */}
+        <div className="absolute inset-0 z-10 opacity-75 align-center">
+          <Lottie
+            animationData={animation}
+            loop={true}
+            autoplay={true}
+            className="absolute inset-0 h-full w-full object-contain shadow-sm"
+          />
+        </div>
+
+        {/* Pattern Overlay */}
+        <div className="absolute inset-0 bg-pattern opacity-10" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-20 flex w-full">
+        {/* Left Side - Visible on tablet and desktop */}
+        <div className="flex-1 p-8 lg:p-12 hidden sm:block">
+          {/* Login Text */}
+          <div className="text-white max-w-xl mt-20">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+              Login into
+              <br />
+              your account
+            </h1>
+            <p className="text-lg opacity-80 mb-8">
+              Access your document management portal
+            </p>
+
+            {/* Features Grid - Updated with emojis */}
+            <div className="grid sm:grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-start space-x-4 bg-[#8B4513]/15 hover:bg-[#8B4513]/25 rounded-lg p-4 transition-all duration-300 backdrop-blur-sm"
+                >
+                  <div className="text-white text-2xl shrink-0">
+                    {feature.icon}
+                  </div>
                   <div>
-                    <div className="mt-2 relative">
-                      <input
-                        id="username"
-                        name="username"
-                        type="text"
-                        required
-                        placeholder="Email"
-                        onChange={(e) => setUserName(e.target.value)}
-                        className=" p-2 pl-12 w-full border-2 border-gray-300 bg-gray-100 shadow-sm hover:border-[#301607] focus:border-[#c95d1e] outline-none rounded-md border-w"
-                      />
-                      <span class="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#301607] pointer-events-none">
-                        <PersonIcon fontSize="small" />
-                      </span>
-                    </div>
+                    <h3 className="text-white font-semibold text-lg mb-1">
+                      {feature.title}
+                    </h3>
+                    <p className="text-white/70 text-sm">
+                      {feature.description}
+                    </p>
                   </div>
-
-                  <div>
-                    <div className="mt-2 relative">
-                      <input
-                        id="password"
-                        name="password"
-                        type={showPassword ? "text" : "password"}
-                        required
-                        placeholder="Password"
-                        onChange={(e) => setPassword(e.target.value)}
-                        className=" p-2 pl-12 w-full border-2 border-gray-300 bg-gray-100 shadow-sm hover:border-[#301607]  focus:border-[#c95d1e] outline-none rounded-md transition"
-                      />
-                      <span class="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#301607] pointer-events-none">
-                        <LockIcon fontSize="small" />
-                      </span>
-                      <span
-                        className="absolute right-2 top-1/2 transform -translate-y-1/2 cursor-pointer text-[#301607]"
-                        onClick={togglePasswordVisibility}
-                      >
-                        {showPassword ? (
-                          <VisibilityOffIcon
-                            fontSize="small"
-                            className="opacity-85"
-                          />
-                        ) : (
-                          <VisibilityIcon
-                            fontSize="small"
-                            className="opacity-85"
-                          />
-                        )}
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between mb-4">
-                    {/* Remember Me */}
-                    <div className="flex items-center">
-                      <input
-                        id="remember-me"
-                        name="remember-me"
-                        type="checkbox"
-                        className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                      />
-                      <label
-                        htmlFor="remember-me"
-                        className="ml-2 block text-sm text-gray-700"
-                      >
-                        Remember me
-                      </label>
-                    </div>
-
-                    <div>
-                      <a
-                        href="/forgot-password"
-                        onClick={handleForgotPassword}
-                        className="text-sm text-gray-700 hover:underline focus:outline-none focus:underline focus:text-[#301607] px-2"
-                      >
-                        Forgot Password?
-                      </a>
-                    </div>
-                  </div>
-
-                  <div>
-                    <div className="flex justify-center mb-4">
-                      <button
-                        type="submit"
-                        className="button-login-colour flex w-full  justify-center rounded-md px-3 py-1.5 text-sm font-semibold leading-6 shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
-                        onClick={(e) => handleLogin(e)}
-                        // Disable the button when loading
-                      >
-                        {isLoading || isStoreDataLoading
-                          ? "Please wait..."
-                          : "Sign in"}
-                      </button>
-                    </div>
-                    <span className="flex justify-center">
-                      {error && <p className="p-2 text-red-500">{error}</p>}
-                    </span>
-                  </div>
-                </form>
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
-        {/* <div className="relative hidden w-0 flex-1 lg:block h-screen ">
-          <img
-            alt=""
-            src={image}
-            className="absolute inset-0 h-full w-full object-cover shadow-sm"
-          />
-        </div> */}
-         <div className="relative hidden w-0 flex-1 lg:block h-screen bg-white">
-      <Lottie 
-        animationData={animationData1} 
-        loop={true} 
-        autoplay={true} 
-        className="absolute inset-0 h-full w-full object-contain shadow-sm"
-      />
-    </div>
+
+        {/* Right Side - Login Form */}
+        <div className="flex-1 flex items-center justify-center p-4 sm:p-8">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-[400px] shadow-xl backdrop-blur-lg">
+            <div className="flex justify-center items-center mb-2">
+              <img src={DealVisorLogo} alt="B2Y" className="h-28 w-auto" />
+            </div>
+
+            <form onSubmit={handleLogin} className="space-y-6">
+              {/* Email Input */}
+              <div className="space-y-2">
+                <label className="text-gray-600 text-sm sm:block hidden">
+                  Email
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full p-3 pl-10 bg-[#F1F5F9] rounded-lg text-gray-700"
+                    placeholder="admin@example.com"
+                  />
+                  <HiMail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+                </div>
+              </div>
+
+              {/* Password Input */}
+              <div className="space-y-2">
+                <label className="text-gray-600 text-sm sm:block">
+                  Password
+                </label>
+                <div className="relative">
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full p-3 pl-10 bg-[#F1F5F9] rounded-lg text-gray-700"
+                    placeholder="••••••••"
+                  />
+                  <HiLockClosed className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xl" />
+                </div>
+              </div>
+
+              {/* Forgot Password Link */}
+              <div className="flex justify-end">
+  <button
+    type="button"
+    onClick={() => navigate("/forgot-password")}
+    className="text-[#8B4513] text-sm hover:underline"
+  >
+    Forgot your Password?
+  </button>
+</div>
+
+
+              {/* Error Message */}
+              {error && (
+                <p className="text-red-500 text-sm text-center">{error}</p>
+              )}
+
+              {/* Login Button */}
+              <button
+                type="submit"
+                className="w-full bg-[#8B4513] hover:bg-[#632e0f] text-white py-3 rounded-lg font-medium transition-colors"
+                disabled={isLoading}
+              >
+                Login
+              </button>
+            </form>
+          </div>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

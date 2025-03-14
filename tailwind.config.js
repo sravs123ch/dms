@@ -24,11 +24,19 @@ module.exports = {
         "custom-maroon": "#fafafa",
         "custom-lightbrown": "#C07A50",
         "custom-blue-table": "#003375",
+        primary: {
+          DEFAULT: "#7E22CE",
+          light: "#9333EA",
+          dark: "#6B21A8",
+        },
       },
       fontSize: {
         xxs: "0.625rem", // 10px
       },
+      borderWidth: {
+        0.5: "0.5px",
+      },
     },
   },
-  plugins: [require('tailwindcss-motion')], 
+  plugins: [require("tailwindcss-motion")],
 };

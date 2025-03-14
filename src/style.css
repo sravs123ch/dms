@@ -1,13 +1,11 @@
-/* styles.css */
-
-/* @apply px-4 sm:px-6 lg:px-8 pt-4 sm:ml-10 lg:ml-72 w-auto mt-6 bg-white p-6 rounded-lg shadow-md; */
-/* .main-container {
-  @apply px-4 sm:px-6 lg:px-8 pt-4 sm:ml-10 lg:ml-56 w-auto mt-20 p-6 rounded-lg;
-} */
-
+:root {
+  --primary-brown: #8b4513;
+  --secondary-brown: #a0522d;
+  --light-brown: #d2b48c; /* Light brown for hover */
+}
 
 .main-container {
-  @apply px-4 sm:px-6 lg:px-8 pt-4 mt-24 md:mt-20 p-6 rounded-lg transition-all duration-300;
+  @apply px-4 sm:px-6 lg:px-8 pt-0 mt-24 md:mt-20 p-6 rounded-lg transition-all duration-300;
 }
 
 .main-container.expanded {
@@ -31,7 +29,6 @@
     @apply ml-24; /* Adjust for collapsed state in mobile view */
   }
 }
-
 
 .body-container {
   @apply flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center;
@@ -62,7 +59,18 @@
 }
 
 .action-button {
-  @apply w-full inline-flex items-center gap-x-1.5 rounded-md bg-custom-blue-table px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-custom-lightblue hover:text-gray-700 focus:outline-none;
+  @apply w-full inline-flex items-center gap-x-1.5 rounded-md px-3 py-2 text-sm font-semibold text-white shadow-sm focus:outline-none;
+  background: linear-gradient(
+    to right,
+    var(--primary-brown),
+    var(--secondary-brown)
+  );
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.action-button:hover {
+  background: var(--light-brown);
+  color: var(--primary-brown);
 }
 
 .icon {
@@ -220,7 +228,13 @@
 /* Save button */
 
 .save-btn {
-  @apply bg-custom-darkblue text-white;
+  @apply  text-white;
+  background: linear-gradient(
+    to right,
+    var(--primary-brown),
+    var(--secondary-brown)
+  );
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .save-btn:hover {
@@ -297,11 +311,10 @@
   padding: 10px; /* Adjust padding if needed */
 }
 
-
-.button-login-colour{
-  @apply bg-[#632e0f] hover:bg-[#c95d1e] hover:text-[#301607] text-white
+.button-login-colour {
+  @apply bg-[#632e0f] hover:bg-[#c95d1e] hover:text-[#301607] text-white;
 }
 
-.ai-color{
-  @apply bg-custom-blue-table
+.ai-color {
+  @apply bg-custom-blue-table;
 }

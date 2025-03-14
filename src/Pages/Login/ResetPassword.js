@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
-import Logo from "../../assests/Images/imly-logo-new.jpg";
-import image from "../../assests/Images/imly-two.png";
+import DealVisorLogo from "../../assests/Images/Deal visor.png";
 import LockIcon from "@mui/icons-material/Lock";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -10,29 +9,52 @@ import axios from "axios";
 import PersonIcon from "@mui/icons-material/Person";
 import { toast, ToastContainer } from "react-toastify";
 import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
+import Lottie from "lottie-react";
+import animation from "../../assests/animations/Animation-1.json";
 
-const Login = () => {
+const ResetPasswordPage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState("");
-  const [showPassword, setShowPassword] = useState(false); // Toggle for password visibility
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const [isLoading, setIsLoading] = useState(false);
-  // const email = location.state?.email || "";
-  // Set the email state from location.state or an empty string
   const [email, setEmail] = useState(location.state?.email || "");
 
+  const features = [
+    {
+      icon: "📄",
+      title: "Document Upload",
+      description: "Securely upload and manage your documents",
+    },
+    {
+      icon: "✍️",
+      title: "Digital Signatures",
+      description: "Sign documents electronically",
+    },
+    {
+      icon: "👥",
+      title: "Collaboration",
+      description: "Review and approve documents together",
+    },
+    {
+      icon: "🔒",
+      title: "Secure Storage",
+      description: "Keep your documents safe and organized",
+    },
+  ];
+
   useEffect(() => {
-    // If the email is updated in location.state, you can update the state here if needed
     setEmail(location.state?.email || "");
   }, [location.state?.email]);
+
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
 
-  const handleResetPassword = async () => {
-    // Form validation
+  const handleResetPassword = async (e) => {
+    e.preventDefault();
     if (!newPassword || !confirmPassword) {
       setPasswordError("All fields are required");
       return;
@@ -44,9 +66,7 @@ const Login = () => {
       return;
     }
 
-    setPasswordError(""); // Reset password error
-
-    // Set loading state before API call
+    setPasswordError("");
     setIsLoading(true);
 
     try {
@@ -61,168 +81,168 @@ const Login = () => {
         response.status === 201 ||
         response.StatusCode === "SUCCESS"
       ) {
-        // Show success toast
-        toast.success("Password reset successfully!", {
-          position: "top-right",
-          autoClose: 3000, // 3 seconds
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
-
-        navigate("/"); // Navigate to login page
-      } else {
-        setPasswordError("Failed to reset password. Try again.");
-
-        // Show error toast for API failure
-        toast.error("Failed to reset password. Try again.", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.success("Password reset successfully!");
+        navigate("/");
       }
     } catch (error) {
       console.error("Error resetting password:", error);
       setPasswordError("Something went wrong. Please try again.");
-
-      // Show error toast for catch block (API error)
-      toast.error("Something went wrong. Please try again.", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-      });
+      toast.error("Something went wrong. Please try again.");
     } finally {
-      setIsLoading(false); // Reset loading state
+      setIsLoading(false);
     }
   };
 
   return (
-    <>
-      {/* Main Section */}
-      <div className="flex min-h-full p-0 m-0 flex-1 bg-gray-100">
-        <ToastContainer />
-        <div className="flex flex-1 flex-col justify-center px-4 py-12 sm:px-6 lg:flex-none lg:px-20 xl:px-28 h-[100vh]">
-          <div className="mx-auto w-full max-w-sm lg:w-[350px] xl:w-[450px] rounded-md p-6 shadow-sm bg-white">
-            {/* Logo */}
-            <div className="flex justify-center rounded-md mb-8">
-              <img
-                alt="Your Company"
-                src={Logo}
-                className="h-20 w-auto rounded-lg ml-6"
-              />
-            </div>
+    <div className="min-h-screen bg-[#8B4513] relative overflow-hidden">
+      <ToastContainer />
 
-            {/* Reset Password Form */}
-            <div>
-              <h4 className="text-xl font-bold leading-9 tracking-tight text-[#632e0f] text-center">
-                Reset Your Password
-              </h4>
-            </div>
+      {/* Background Pattern with Gradient */}
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#8B4513] via-[#632e0f] to-[#301607] opacity-95" />
 
-            <div className="mt-10">
-              {/* <form className="space-y-6"> */}
-              <form
-                className="space-y-6"
-                onSubmit={(e) => {
-                  e.preventDefault(); // Prevents the default form submission
-                  handleResetPassword(); // Call the API function
-                }}
-              >
-                <div>
-                  <div className="mt-2 relative">
-                    <input
-                      id="email"
-                      name="email"
-                      type="email"
-                      placeholder="Email"
-                      required
-                      value={email} // Display the email value
-                      onChange={(e) => setEmail(e.target.value)} // This updates the internal email state if editable
-                      readOnly // Make the input field non-editable
-                      className="p-2 pl-12 w-full border-2 border-gray-300 bg-gray-100 shadow-sm hover:border-[#301607] focus:border-[#c95d1e] outline-none rounded-md"
-                    />
-                    <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#301607] pointer-events-none">
-                      <PersonIcon fontSize="small" />
-                    </span>
+        {/* Animation Layer */}
+        <div className="absolute inset-0 z-10 opacity-75 align-center">
+          <Lottie
+            animationData={animation}
+            loop={true}
+            autoplay={true}
+            className="absolute inset-0 h-full w-full object-contain shadow-sm"
+          />
+        </div>
+
+        {/* Pattern Overlay */}
+        <div className="absolute inset-0 bg-pattern opacity-10" />
+      </div>
+
+      {/* Main Content */}
+      <div className="relative z-20 flex flex-col lg:flex-row w-full min-h-screen">
+        {/* Left Side - Now visible on all screens */}
+        <div className="w-full lg:w-1/2 p-4 sm:p-8 lg:p-12">
+          {/* Reset Password Text */}
+          <div className="text-white max-w-xl mx-auto lg:mx-0 mt-8 lg:mt-20 text-center lg:text-left mb-8 lg:mb-0">
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">
+              <span className="block">Reset</span>
+              <span className="block mt-1">
+                <br className="hidden lg:block" />
+                Password
+              </span>
+            </h1>
+            <p className="text-lg opacity-80 mb-8">
+              Access your document management portal
+            </p>
+
+            {/* Features Grid - Hidden on mobile and tablet */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-6 mt-8">
+              {features.map((feature, index) => (
+                <div
+                  key={index}
+                  className="flex items-start space-x-4 bg-[#8B4513]/15 hover:bg-[#8B4513]/25 rounded-lg p-4 transition-all duration-300 backdrop-blur-sm"
+                >
+                  <div className="text-white text-2xl shrink-0">
+                    {feature.icon}
+                  </div>
+                  <div>
+                    <h3 className="text-white font-semibold text-lg mb-1">
+                      {feature.title}
+                    </h3>
+                    <p className="text-white/70 text-sm">
+                      {feature.description}
+                    </p>
                   </div>
                 </div>
-
-                {/* New Password Input */}
-                <div className="mt-2 relative">
-                  <input
-                    id="new-password"
-                    name="new-password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    placeholder="New Password"
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    className="p-2 pl-12 w-full border-2 border-gray-300 bg-gray-100 shadow-sm hover:border-[#301607] focus:border-[#c95d1e] outline-none rounded-md"
-                  />
-                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#301607] pointer-events-none">
-                    <LockIcon fontSize="small" />
-                  </span>
-                </div>
-
-                {/* Confirm New Password Input */}
-                <div className="mt-2 relative">
-                  <input
-                    id="confirm-password"
-                    name="confirm-password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    placeholder="Confirm New Password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="p-2 pl-12 w-full border-2 border-gray-300 bg-gray-100 shadow-sm hover:border-[#301607] focus:border-[#c95d1e] outline-none rounded-md"
-                  />
-                  <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-[#301607] pointer-events-none">
-                    <LockIcon fontSize="small" />
-                  </span>
-                </div>
-
-                {passwordError && (
-                  <p className="mt-2 text-sm text-red-500 text-start">
-                    {passwordError}
-                  </p>
-                )}
-
-                <div className="flex justify-center mt-8">
-                  <button
-                    className="button-login-colour w-full mt-6 mb-10 justify-center rounded-md px-3 py-2 text-sm font-semibold shadow-sm"
-
-                    // onClick={handleResetPassword}
-                  >
-                    Reset Password
-                  </button>
-                </div>
-              </form>
+              ))}
             </div>
           </div>
         </div>
 
-        {/* Image Section */}
-        <div className="relative hidden w-0 flex-1 lg:block h-screen">
-          <img
-            alt=""
-            src={image}
-            className="absolute inset-0 h-full w-full object-cover shadow-sm"
-          />
+        {/* Right Side - Form */}
+        <div className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-8">
+          <div className="bg-white rounded-3xl p-6 sm:p-8 w-full max-w-[400px] shadow-xl backdrop-blur-lg">
+            <div className="flex justify-center mb-8">
+              <img
+                src={DealVisorLogo}
+                alt="Logo"
+                className="h-20 sm:h-24 lg:h-28"
+              />
+            </div>
+
+            <form onSubmit={handleResetPassword} className="space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Email
+                </label>
+                <div className="relative">
+                  <input
+                    type="email"
+                    value={email}
+                    readOnly
+                    className="w-full px-4 py-3 pl-12 rounded-xl border-[0.5px] border-gray-200 bg-gray-50 focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/20 outline-none transition-all duration-300"
+                  />
+                  <PersonIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  New Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full px-4 py-3 pl-12 pr-12 rounded-xl border-[0.5px] border-gray-200 focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/20 outline-none transition-all duration-300"
+                    placeholder="Enter new password"
+                  />
+                  <LockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                  <button
+                    type="button"
+                    onClick={togglePasswordVisibility}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Confirm Password
+                </label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="w-full px-4 py-3 pl-12 rounded-xl border-[0.5px] border-gray-200 focus:border-[#8B4513] focus:ring-2 focus:ring-[#8B4513]/20 outline-none transition-all duration-300"
+                    placeholder="Confirm new password"
+                  />
+                  <LockIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
+                </div>
+              </div>
+
+              {passwordError && (
+                <p className="text-red-500 text-sm animate-pulse text-center">
+                  {passwordError}
+                </p>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="w-full py-3 bg-[#8B4513] text-white rounded-xl font-semibold transition-all duration-300 hover:bg-[#632e0f] disabled:opacity-50"
+              >
+                {isLoading ? "Resetting..." : "Reset Password"}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
+
       {isLoading && <LoadingAnimation />}
-    </>
+    </div>
   );
 };
 
-export default Login;
+export default ResetPasswordPage;

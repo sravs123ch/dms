@@ -175,27 +175,25 @@ function UserRoles() {
     setSearchName(searchValue);
     fetchRoles();
   };
-   // Retrieve the navbar-collapsed value from localStorage
-   const storedCollapsed = localStorage.getItem('navbar-collapsed') === 'true';
+  // Retrieve the navbar-collapsed value from localStorage
+  const storedCollapsed = localStorage.getItem("navbar-collapsed") === "true";
 
-   // Set the initial state based on the stored value
-   const [isExpanded, setIsExpanded] = useState(!storedCollapsed);
-   useEffect(() => {
-     // Set the initial state based on the localStorage value
-     const storedCollapsed = localStorage.getItem('navbar-collapsed');
-     if (storedCollapsed !== null) {
-       setIsExpanded(storedCollapsed === 'false');
-     }
-   }, []); // Only run this once on component mount
+  // Set the initial state based on the stored value
+  const [isExpanded, setIsExpanded] = useState(!storedCollapsed);
+  useEffect(() => {
+    // Set the initial state based on the localStorage value
+    const storedCollapsed = localStorage.getItem("navbar-collapsed");
+    if (storedCollapsed !== null) {
+      setIsExpanded(storedCollapsed === "false");
+    }
+  }, []); // Only run this once on component mount
 
   return (
     <div className="main-container">
-     {/* <div
-     className={`main-container ${isExpanded ? 'expanded' : 'collapsed'}`}
-   > */}
       {loading && <LoadingAnimation />}
+      <div className="mx-auto bg-white p-6 rounded-lg shadow-lg">
       <div className="body-container">
-        <h2 className="heading">Roles</h2>
+        <h2 className="heading text-brown-700">Roles</h2>
 
         <div className="search-button-group">
           <ul className="button-list">
@@ -241,88 +239,6 @@ function UserRoles() {
           </div>
         </div>
 
-        <div className="flex flex-col md:flex-row items-start md:items-center gap-4 md:gap-10">
-          <Combobox value={selectedStore} onChange={setSelectedStore}>
-            <div className="combobox-wrapper h-[40px]">
-              <Combobox.Input
-                 className={`combobox-input w-full h-full ${
-                  selectedStore
-                }`}
-                displayValue={(store) => store?.StoreName || "Select Store ID"}
-                placeholder="Select Store Name"
-                readOnly={storesData.length === 1}
-              />
-              {storesData.length > 1 && (
-                <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                  <ChevronUpDownIcon
-                    className="h-5 w-5 text-gray-400"
-                    aria-hidden="true"
-                  />
-                </Combobox.Button>
-              )}
-              {storesData.length > 1 && (
-                <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto bg-white border border-gray-300 rounded-md shadow-lg">
-                  {/* Add "Select Store ID" option */}
-                  <Combobox.Option
-                    key="select-store-id"
-                    value={{ StoreID: null, StoreName: "Select Store ID" }}
-                    className={({ active }) =>
-                      `cursor-pointer select-none relative p-2 ${
-                        active ? "bg-blue-500 text-white" : "text-gray-900"
-                      }`
-                    }
-                  >
-                    {({ selected }) => (
-                      <>
-                        <span
-                          className={selected ? "font-semibold" : "font-normal"}
-                        >
-                          Select Store ID
-                        </span>
-                        {selected && (
-                          <CheckIcon
-                            className="h-5 w-5 text-white absolute right-2"
-                            aria-hidden="true"
-                          />
-                        )}
-                      </>
-                    )}
-                  </Combobox.Option>
-                  {/* Render all store options */}
-                  {storesData.map((store) => (
-                    <Combobox.Option
-                      key={store.StoreID}
-                      value={store}
-                      className={({ active }) =>
-                        `cursor-pointer select-none relative p-2 ${
-                          active ? "bg-blue-500 text-white" : "text-gray-900"
-                        }`
-                      }
-                    >
-                      {({ selected }) => (
-                        <>
-                          <span
-                            className={
-                              selected ? "font-semibold" : "font-normal"
-                            }
-                          >
-                            {store.StoreName}
-                          </span>
-                          {selected && (
-                            <CheckIcon
-                              className="h-5 w-5 text-white absolute right-2"
-                              aria-hidden="true"
-                            />
-                          )}
-                        </>
-                      )}
-                    </Combobox.Option>
-                  ))}
-                </Combobox.Options>
-              )}
-            </div>
-          </Combobox>
-        </div>
       </div>
 
       <TableContainer
@@ -371,7 +287,7 @@ function UserRoles() {
                         onClick={() =>
                           handleEditClick(row.RoleID, row.RoleName, row.StoreID)
                         }
-                        className="button edit-button "
+                        className="button edit-button text-white"
                       >
                         <AiOutlineEdit
                           aria-hidden="true"
@@ -383,7 +299,7 @@ function UserRoles() {
                       <button
                         type="button"
                         onClick={() => handleDeleteClick(row.RoleID)}
-                        className="button delete-button "
+                        className="button delete-button text-white"
                       >
                         <MdOutlineCancel
                           aria-hidden="true"
@@ -413,6 +329,7 @@ function UserRoles() {
           </TableFooter>
         </Table>
       </TableContainer>
+    </div>
     </div>
   );
 }

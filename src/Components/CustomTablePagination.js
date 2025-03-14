@@ -1,4 +1,3 @@
-
 import React from "react";
 import PropTypes from "prop-types";
 import { styled, useTheme } from "@mui/material/styles";
@@ -11,22 +10,20 @@ import LastPageIcon from "@mui/icons-material/LastPage";
 import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 
-// Styled table cell with fixed width
+// Styled table cell with brown gradient
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   [`&.${tableCellClasses.head}`]: {
-    // backgroundColor: '#003375',
-    backgroundColor: '#003375',
-    // backgroundColor: '#622f0f',
-    
+    background: "linear-gradient(to right, #8B4513, #A0522D)", // Brown gradient
+    // backgroundColor:"#1E293B",
     color: theme.palette.common.white,
-    fontWeight: 'bold',
-    width: '150px',
-    fontSize: '14px', 
-    padding: '10px', 
+    fontWeight: "bold",
+    width: "150px",
+    fontSize: "14px",
+    padding: "10px",
   },
   [`&.${tableCellClasses.body}`]: {
     fontSize: 14,
-    padding: '10px', 
+    padding: "10px",
   },
 }));
 
@@ -66,7 +63,7 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
         flexShrink: 0,
         ml: 2.5,
         display: "flex",
-        justifyContent: "center", 
+        justifyContent: "center",
       }}
     >
       <IconButton
@@ -74,28 +71,36 @@ function TablePaginationActions({ count, page, rowsPerPage, onPageChange }) {
         disabled={page === 0}
         aria-label="first page"
       >
-        {theme.direction === 'rtl' ? <LastPageIcon /> : <FirstPageIcon />}
+        {theme.direction === "rtl" ? <LastPageIcon /> : <FirstPageIcon />}
       </IconButton>
       <IconButton
         onClick={handleBackButtonClick}
         disabled={page === 0}
         aria-label="previous page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowRight /> : <KeyboardArrowLeft />}
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowRight />
+        ) : (
+          <KeyboardArrowLeft />
+        )}
       </IconButton>
       <IconButton
         onClick={handleNextButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="next page"
       >
-        {theme.direction === 'rtl' ? <KeyboardArrowLeft /> : <KeyboardArrowRight />}
+        {theme.direction === "rtl" ? (
+          <KeyboardArrowLeft />
+        ) : (
+          <KeyboardArrowRight />
+        )}
       </IconButton>
       <IconButton
         onClick={handleLastPageButtonClick}
         disabled={page >= Math.ceil(count / rowsPerPage) - 1}
         aria-label="last page"
       >
-        {theme.direction === 'rtl' ? <FirstPageIcon /> : <LastPageIcon />}
+        {theme.direction === "rtl" ? <FirstPageIcon /> : <LastPageIcon />}
       </IconButton>
     </Box>
   );

@@ -1,25 +1,25 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Chart, registerables } from "chart.js";
-import { Line, Doughnut, Bar } from "react-chartjs-2";
-import { TbListSearch } from "react-icons/tb";
-import { GiConfirmed } from "react-icons/gi";
-import { RiUserFollowLine } from "react-icons/ri";
-import { MdProductionQuantityLimits } from "react-icons/md";
-import { GrInstall } from "react-icons/gr";
-import { BsBoxFill } from "react-icons/bs";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
+import { Line, Doughnut } from "react-chartjs-2";
+import { FaFileSignature, FaFileAlt, FaFilePdf } from "react-icons/fa";
+import { MdPendingActions } from "react-icons/md";
+import {
+  BsFileEarmarkCheck,
+  BsArrowUpRight,
+  BsArrowDownRight,
+} from "react-icons/bs";
+import { AiOutlineFileDone } from "react-icons/ai";
 import { Combobox } from "@headlessui/react";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import {
   GET_OVERALL_DATA_FOR_DASHBOARD,
   TRIGGER_MAIL,
-  DashboardOrderStatus,CustomerStatusCount,
+  DashboardOrderStatus,
+  CustomerStatusCount,
 } from "../../Constants/apiRoutes";
 import Datepicker from "react-tailwindcss-datepicker";
 import { GET_SALES_AND_PAYMENT_REPORT_BY_MONTH } from "../../Constants/apiRoutes";
 import axios from "axios";
-
 import "chart.js/auto";
 import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
 import { EnvelopeIcon } from "@heroicons/react/24/outline";
@@ -30,7 +30,6 @@ Chart.register(...registerables);
 const Dashboard = () => {
   const lineChartRef = useRef(null);
   const doughnutChartRef = useRef(null);
-  const bigChartRef = useRef(null);
   // State to hold the API data
   const [salesAndPaymentData, setSalesAndPaymentData] = useState([]);
   const [overallData, setOverallData] = useState({});
@@ -39,11 +38,20 @@ const Dashboard = () => {
   const [storeNames, setStoreNames] = useState([]);
   const [selectedStore, setSelectedStore] = useState("");
   const [isStoreDataLoading, setIsStoreDataLoading] = useState(true);
-  const[orderStatusData,setOrderStatusData]=useState({}); 
-  const[customerStatusData,setCustomerStatusData]=useState({}); 
+  const [orderStatusData, setOrderStatusData] = useState({});
+  const [customerStatusData, setCustomerStatusData] = useState({});
   const navigate = useNavigate();
 
   const tenantID = localStorage.getItem("TenantID");
+  const [selectedStatus, setSelectedStatus] = useState("all");
+
+  const statusOptions = [
+    { id: "all", name: "Select Status" },
+    { id: "approved", name: "Approved" },
+    { id: "pending", name: "Pending" },
+    { id: "rejected", name: "Rejected" },
+  ];
+
   useEffect(() => {
     const loadStoreData = () => {
       const storedData = localStorage.getItem("storesData");
@@ -132,66 +140,66 @@ const Dashboard = () => {
   };
 
   // Listen for the storeDataReady event
- 
-const fetchOrderStatusData = async () => {
-  try {
-    let storeIDs = selectedStore?.StoreID || getStoreIDs();
 
-    if (!storeIDs || storeIDs.length === 0) {
-      console.warn("No StoreIDs provided. Skipping network call.");
+  const fetchOrderStatusData = async () => {
+    try {
+      let storeIDs = selectedStore?.StoreID || getStoreIDs();
+
+      if (!storeIDs || storeIDs.length === 0) {
+        console.warn("No StoreIDs provided. Skipping network call.");
+        setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      const response = await axios.get(DashboardOrderStatus, {
+        params: {
+          StartDate: value.startDate,
+          EndDate: value.endDate,
+          StoreIDs: Array.isArray(storeIDs) ? storeIDs : [storeIDs],
+        },
+      });
+
+      if (response.data.success) {
+        setOrderStatusData(response.data.data); // ✅ Store only the "data" part
+      } else {
+        console.warn("Unexpected API response:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching overall dashboard data:", error);
+    } finally {
       setLoading(false);
-      return;
     }
+  };
 
-    setLoading(true);
-    const response = await axios.get(DashboardOrderStatus, {
-      params: {
-        StartDate: value.startDate,
-        EndDate: value.endDate,
-        StoreIDs: Array.isArray(storeIDs) ? storeIDs : [storeIDs],
-      },
-    });
+  const fetchCustomerStatusData = async () => {
+    try {
+      let storeIDs = selectedStore?.StoreID || getStoreIDs();
 
-    if (response.data.success) {
-      setOrderStatusData(response.data.data); // ✅ Store only the "data" part
-    } else {
-      console.warn("Unexpected API response:", response.data);
-    }
-  } catch (error) {
-    console.error("Error fetching overall dashboard data:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+      if (!storeIDs || storeIDs.length === 0) {
+        console.warn("No StoreIDs provided. Skipping network call.");
+        setLoading(false);
+        return;
+      }
 
-const fetchCustomerStatusData = async () => {
-  try {
-    let storeIDs = selectedStore?.StoreID || getStoreIDs();
+      setLoading(true);
+      const response = await axios.get(CustomerStatusCount, {
+        params: {
+          StoreIDs: Array.isArray(storeIDs) ? storeIDs : [storeIDs],
+        },
+      });
 
-    if (!storeIDs || storeIDs.length === 0) {
-      console.warn("No StoreIDs provided. Skipping network call.");
+      if (response.data.success) {
+        setCustomerStatusData(response.data.data); // ✅ Store only the "data" part
+      } else {
+        console.warn("Unexpected API response:", response.data);
+      }
+    } catch (error) {
+      console.error("Error fetching overall dashboard data:", error);
+    } finally {
       setLoading(false);
-      return;
     }
-
-    setLoading(true);
-    const response = await axios.get(CustomerStatusCount, {
-      params: {
-        StoreIDs: Array.isArray(storeIDs) ? storeIDs : [storeIDs],
-      },
-    });
-
-    if (response.data.success) {
-      setCustomerStatusData(response.data.data); // ✅ Store only the "data" part
-    } else {
-      console.warn("Unexpected API response:", response.data);
-    }
-  } catch (error) {
-    console.error("Error fetching overall dashboard data:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
   useEffect(() => {
     const loadStoreData = () => {
@@ -296,61 +304,70 @@ const fetchCustomerStatusData = async () => {
     labels: salesAndPaymentData.map((item) => item.Month),
     datasets: [
       {
-        label: "Orders Per Month",
+        label: "Approved Documents",
         data: salesAndPaymentData.map((item) => parseInt(item.OrderCount)),
-        fill: false,
-        backgroundColor: "rgba(75,192,192,1)",
-        borderColor: "rgba(75,192,192,1)",
+        fill: true,
+        backgroundColor: "rgba(16, 185, 129, 0.1)",
+        borderColor: "#10B981",
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: "#10B981",
+        pointHoverBorderColor: "#fff",
+        pointHoverBorderWidth: 2,
+        borderWidth: 2,
+        cubicInterpolationMode: "monotone",
       },
       {
-        label: "Total Payments Per Month",
+        label: "Pending Documents",
         data: salesAndPaymentData.map((item) => parseFloat(item.TotalPayments)),
-        fill: false,
-        backgroundColor: "rgba(255,99,132,1)",
-        borderColor: "rgba(255,99,132,1)",
+        fill: true,
+        backgroundColor: "rgba(245, 158, 11, 0.1)",
+        borderColor: "#F59E0B",
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: "#F59E0B",
+        pointHoverBorderColor: "#fff",
+        pointHoverBorderWidth: 2,
+        borderWidth: 2,
+        cubicInterpolationMode: "monotone",
+      },
+      {
+        label: "Rejected Documents",
+        data: salesAndPaymentData.map(
+          (item) => parseFloat(item.TotalPayments) * 0.3
+        ),
+        fill: true,
+        backgroundColor: "rgba(239, 68, 68, 0.1)",
+        borderColor: "#EF4444",
+        tension: 0.4,
+        pointRadius: 0,
+        pointHoverRadius: 6,
+        pointHoverBackgroundColor: "#EF4444",
+        pointHoverBorderColor: "#fff",
+        pointHoverBorderWidth: 2,
+        borderWidth: 2,
+        cubicInterpolationMode: "monotone",
       },
     ],
   };
 
   const doughnutData = {
-    labels: overallData.OrderStatusCounts
-      ? overallData.OrderStatusCounts.map((item) => item.OrderStatus)
-      : [],
+    labels: ["Approved", "Pending", "Rejected"],
     datasets: [
       {
-        label: "Order Status",
-        data: overallData.OrderStatusCounts
-          ? overallData.OrderStatusCounts.map((item) => parseInt(item.Count))
-          : [],
+        data: [65, 25, 10],
         backgroundColor: [
-          "rgba( 255, 99, 132, 0.2)",
-          "rgba(54, 162, 235, 0.2)",
-          "rgba(255, 206, 86, 0.2)",
-          "rgba(75, 192, 192, 0.2)",
-          "rgba(153, 102, 255, 0.2)",
-          "rgba(255, 159, 64, 0.2)",
+          "rgba(34, 197, 94, 0.2)",
+          "rgba(234, 179, 8, 0.2)",
+          "rgba(239, 68, 68, 0.2)",
         ],
         borderColor: [
-          "rgba(255, 99, 132, 1)",
-          "rgba(54, 162, 235, 1)",
-          "rgba(255, 206, 86, 1)",
-          "rgba(75, 192, 192, 1)",
-          "rgba(153, 102, 255, 1)",
-          "rgba(255, 159, 64, 1)",
+          "rgba(34, 197, 94, 1)",
+          "rgba(234, 179, 8, 1)",
+          "rgba(239, 68, 68, 1)",
         ],
-        borderWidth: 1,
-      },
-    ],
-  };
-
-  const bigChartData = {
-    labels: salesAndPaymentData.map((item) => item.Month),
-    datasets: [
-      {
-        label: "Revenue Generated",
-        data: salesAndPaymentData.map((item) => parseFloat(item.TotalPayments)),
-        backgroundColor: "rgba(255, 99, 132, 0.2)",
-        borderColor: "rgba(255, 99, 132, 1)",
         borderWidth: 1,
       },
     ],
@@ -361,7 +378,6 @@ const fetchCustomerStatusData = async () => {
   useEffect(() => {
     const lineChartInstance = lineChartRef.current;
     const doughnutChartInstance = doughnutChartRef.current;
-    const bigChartInstance = bigChartRef.current;
     return () => {
       if (lineChartInstance) {
         lineChartInstance.destroy();
@@ -369,10 +385,6 @@ const fetchCustomerStatusData = async () => {
 
       if (doughnutChartInstance) {
         doughnutChartInstance.destroy();
-      }
-
-      if (bigChartInstance) {
-        bigChartInstance.destroy();
       }
     };
   }, []);
@@ -433,7 +445,7 @@ const fetchCustomerStatusData = async () => {
   const goToFollowups = () => {
     navigate("/Followups/1");
   };
-  
+
   const goToOrders = () => {
     navigate("/Orders");
   };
@@ -448,250 +460,342 @@ const fetchCustomerStatusData = async () => {
   };
   return (
     <div className="main-container">
-    {/* // <div className={`main-container ${isExpanded ? "expanded" : "collapsed"}`}> */}
       {(loading || isStoreDataLoading) && <LoadingAnimation />}
-     
-      <div className="flex justify-end items-center space-x-4">
-        <div className=" rounded-md px-2 py-2 bg-[#ffe4e6] flex justify-center items-center ring-1 ring-[#881337]">
-          <button onClick={handleMailTrigger} className="flex">
-            <h1 className="mr-2 text-[#881337] text-sm">Send Mail</h1>
-            <span>
-              <EnvelopeIcon className="text-[#881337] w-5 h-5" />
-            </span>
-          </button>
-        </div>
-        <div className="flex flex-col items-end">
-          <div className="combobox-container flex items-center">
-            <Combobox value={selectedStore} onChange={setSelectedStore}>
-              <div className="combobox-wrapper h-[40px]">
-                <Combobox.Input
-                  className={`combobox-input w-full h-full ${selectedStore}`}
-                  displayValue={(store) =>
-                    store?.StoreName || "Select Store ID"
-                  }
-                  placeholder="Select Store Name"
-                  readOnly={storeNames.length === 1}
-                />
 
-                {storeNames.length > 1 && (
-                  <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </Combobox.Button>
-                )}
-                {storeNames.length > 1 && (
-                  <Combobox.Options className="absolute z-30 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    {/* Add "Select Store ID" option */}
+      {/* Header Controls */}
+      <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
+        <h1 className="text-2xl font-bold text-gray-800">
+          Document Management
+        </h1>
+        <div className="flex flex-wrap items-center gap-4">
+          <div className="w-64">
+            <Combobox value={selectedStatus} onChange={setSelectedStatus}>
+              <div className="relative">
+                <Combobox.Input
+                  className="w-full h-10 px-4 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  displayValue={(status) => {
+                    const option = statusOptions.find(
+                      (opt) => opt.id === status
+                    );
+                    return option ? option.name : "Select Status";
+                  }}
+                  placeholder="Select Status"
+                />
+                <Combobox.Button className="absolute inset-y-0 right-0 flex items-center px-2">
+                  <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
+                </Combobox.Button>
+                <Combobox.Options className="absolute z-30 w-full mt-1 bg-white rounded-md shadow-lg">
+                  {statusOptions.map((status) => (
                     <Combobox.Option
-                      key="select-store-id"
-                      value={{ StoreID: null, StoreName: "Select Store ID" }}
-                      className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white"
+                      key={status.id}
+                      value={status.id}
+                      className={({ active }) =>
+                        `p-2 cursor-pointer ${
+                          active ? "bg-blue-500 text-white" : "text-gray-900"
+                        }`
+                      }
                     >
-                      Select Store ID
+                      {status.name}
                     </Combobox.Option>
-                    {/* Render all store options */}
-                    {storeNames.map((store) => (
-                      <Combobox.Option
-                        key={store.StoreID}
-                        value={store}
-                        className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 data-[focus]:bg-indigo-600 data-[focus]:text-white"
-                      >
-                        <span className="block truncate group-data-[selected]:font-semibold">
-                          {store.StoreName}
-                        </span>
-                        {selectedStore?.StoreID === store.StoreID && (
-                          <span className="absolute inset-y-0 right-0 flex items-center pr-4 text-indigo-600">
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                          </span>
-                        )}
-                      </Combobox.Option>
-                    ))}
-                  </Combobox.Options>
-                )}
+                  ))}
+                </Combobox.Options>
               </div>
             </Combobox>
           </div>
-        </div>
 
-        <div className="w-1/4">
-          <div className="border-solid border-gray-400 border-[1px] rounded-lg w-full">
+          <div className="w-72">
             <Datepicker
-              popoverDirection="down"
-              showShortcuts={true}
-              showFooter={true}
-              placeholder="Start Date and End Date"
-              primaryColor={"purple"}
               value={value}
               onChange={(newValue) => setValue(newValue)}
-              className="w-full"
+              showShortcuts={true}
+              primaryColor="blue"
+              inputClassName="h-10 w-full rounded-lg border border-gray-300"
             />
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-2 mb-8 mt-2">
-        {/* ENQUIRY */}
-        <div
-          className="relative h-32 p-4 bg-blue-500 text-white rounded-2xl  overflow-hidden"
-          onClick={goToCustomers}
-        >
-          {/* Icon & Text Container */}
-          <div className="flex items-center justify-items-center p-6 py-3 w-full max-w-sm">
-            {/* Icon */}
-            <TbListSearch className="text-6xl text-white opacity-80 mr-4" />
 
-            {/* Text Content */}
-            <div>
-              <p className="text-2xl font-bold">
-                {overallData.CustomerCount || 0}
+      {/* Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        {/* Approved Documents */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center">
+            <div className="p-3 bg-green-100 rounded-lg">
+              <BsFileEarmarkCheck className="h-6 w-6 text-green-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">
+                Approved Documents
               </p>
-              <p className="text-lg text-white opacity-80 ml-1 font-bold">
-                ENQUIRY
+              <p className="text-2xl font-semibold text-gray-900">
+                {overallData.TotalOrderCount || 0}
               </p>
+            </div>
+          </div>
+          <div className="mt-4">
+            <div className="flex items-center">
+              <span className="text-sm text-green-600">
+                65% of total documents
+              </span>
             </div>
           </div>
         </div>
 
-        {/* FOLLOW UP'S */}
-
-        {/* Icon & Text Container */}
-        <div className="relative h-32 p-4 bg-green-500 text-white rounded-2xl  overflow-hidden">
-          {/* Icon & Text Container */}
-          <div
-            className="flex items-center justify-items-center p-6 py-3 w-full max-w-sm"
-            onClick={goToFollowups}
-          >
-            {/* Icon */}
-            <RiUserFollowLine className="text-6xl text-white opacity-80 mr-4" />
-
-            {/* Text Content */}
-            <div>
-              {/* <h1 className="text-2xl font-bold">100</h1> */}
-              <p className="text-2xl">{customerStatusData?.followUpcount || 0}</p>
-              <p className="text-lg text-white opacity-80 font-bold ml-1">
-                FOLLOW UP'S
+        {/* Pending Documents */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center">
+            <div className="p-3 bg-yellow-100 rounded-lg">
+              <MdPendingActions className="h-6 w-6 text-yellow-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">
+                Pending Documents
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {orderStatusData?.productionCount || 0}
               </p>
             </div>
-            {/* <p className="text-2xl absolute bottom-4 right-5 font-bold">100</p> */}
-            <p className="text-2xl absolute bottom-4 right-5 font-bold">{customerStatusData?.EnquiryCount|| 0}</p>
           </div>
-          {/* Wave Effect */}
-        </div>
-
-        {/* CONFIRMATION */}
-        <div className="relative h-32 p-4 bg-yellow-500 text-white rounded-2xl  overflow-hidden">
-          {/* Icon & Text Container */}
-          <div
-            className="flex items-center justify-items-center p-6 py-3 w-full max-w-sm"
-            onClick={goToOrders}
-          >
-            {/* Icon */}
-            <GiConfirmed className="text-6xl text-white opacity-80 mr-4" />
-
-            {/* Text Content */}
-            <div>
-              {/* <h2 className="text-2xl font-bold">100</h2> */}
-              <p className="text-2xl">{overallData.TotalOrderCount || 0}</p>
-              <p className="text-lg text-white opacity-80 font-bold ml-1">
-                CONFIRMATION
-              </p>
+          <div className="mt-4">
+            <div className="flex items-center">
+              <span className="text-sm text-yellow-600">
+                25% of total documents
+              </span>
             </div>
           </div>
         </div>
 
-        {/* PRODUCTION */}
-        <div className="relative h-32 p-4 bg-red-500 text-white rounded-2xl   overflow-hidden">
-          {/* Icon & Text Container */}
-          <div
-            className="flex items-center justify-items-center p-6 py-3 w-full max-w-sm"
-            onClick={goToProduction}
-          >
-            {/* Icon */}
-            <MdProductionQuantityLimits className="text-6xl text-white opacity-80 mr-4" />
-
-            {/* Text Content */}
-            <div>
-              {/* <h2 className="text-2xl font-bold">100</h2> */}
-              <p className="text-2xl">{orderStatusData?.productionCount || 0}</p>
-              <p className="text-lg text-white opacity-80 ml-1 font-bold">
-                PRODUCTION
+        {/* Rejected Documents */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
+          <div className="flex items-center">
+            <div className="p-3 bg-red-100 rounded-lg">
+              <FaFilePdf className="h-6 w-6 text-red-600" />
+            </div>
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-500">
+                Rejected Documents
+              </p>
+              <p className="text-2xl font-semibold text-gray-900">
+                {orderStatusData?.completionCount || 0}
               </p>
             </div>
-            <p className="text-2xl absolute bottom-4 right-5 font-bold">100</p>
           </div>
-        </div>
-
-        {/* INSTALLATION */}
-        <div className="relative h-32 p-4 bg-slate-500 text-white rounded-2xl   overflow-hidden">
-          {/* Icon & Text Container */}
-          <div
-            className="flex items-center justify-items-center p-6 py-3 w-full max-w-sm"
-            onClick={goToOrdersInstallation}
-          >
-            {/* Icon */}
-            <GrInstall className="text-6xl text-white opacity-80 mr-4" />
-
-            {/* Text Content */}
-            <div>
-            <p className="text-2xl">{orderStatusData?.installationCount || 0}</p>
-              <p className="text-lg text-white opacity-80 font-bold ml-1">
-                INSTALLATION
-              </p>
+          <div className="mt-4">
+            <div className="flex items-center">
+              <span className="text-sm text-red-600">
+                10% of total documents
+              </span>
             </div>
-            <p className="text-2xl absolute bottom-4 right-5 font-bold">100</p>
-          </div>
-        </div>
-
-        {/* HANDOVER */}
-        <div className="relative  p-4 h-32 bg-indigo-500 text-white rounded-2xl  overflow-hidden">
-          {/* Icon & Text Container */}
-          <div
-            className="flex items-center justify-items-center p-6 py-3 w-full max-w-sm"
-            onClick={goToOrdersCompleted}
-          >
-            {/* Icon */}
-            <BsBoxFill className="text-6xl text-white opacity-80 mr-4" />
-
-            {/* Text Content */}
-            <div>
-            <p className="text-2xl">{orderStatusData?.completionCount || 0}</p>
-              <p className="text-lg text-white opacity-80 font-bold ml-1">
-                HANDOVER
-              </p>
-            </div>
-            <p className="text-2xl absolute bottom-4 right-5 font-bold">100</p>
           </div>
         </div>
       </div>
-      {/* Graph Section */}
 
-      {/* <div className="container mx-auto"> */}
-      {tenantID !== "1" && (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
-          <div className="bg-white shadow rounded-lg p-4">
-            <h2 className="text-xl font-semibold mb-4">Sales</h2>
+      {/* Charts Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Document Timeline Section */}
+        <div className="bg-white rounded-2xl shadow-sm p-8">
+          <div className="flex flex-col space-y-6">
+            <div className="flex justify-between items-start">
+              <div>
+                <h2 className="text-xl font-semibold text-gray-900">
+                  Document Analytics
+                </h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Document flow analysis
+                </p>
+              </div>
 
-            <Line data={lineData} ref={lineChartRef} />
-          </div>
+              <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 bg-gray-50/80 px-4 py-2 rounded-xl">
+                  <button className="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-900">
+                    1D
+                  </button>
+                  <button className="px-3 py-1 text-sm font-medium bg-white text-gray-900 shadow-sm rounded-lg">
+                    1W
+                  </button>
+                  <button className="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-900">
+                    1M
+                  </button>
+                  <button className="px-3 py-1 text-sm font-medium text-gray-600 hover:text-gray-900">
+                    1Y
+                  </button>
+                </div>
+              </div>
+            </div>
 
-          <div className="bg-white shadow rounded-lg p-4">
-            <h2 className="text-xl font-semibold mb-4">Order Status</h2>
+            <div className="grid grid-cols-3 gap-4">
+              <div className="bg-emerald-50 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-emerald-900">
+                    Approved
+                  </span>
+                  <span className="flex items-center text-xs font-medium text-emerald-600">
+                    <BsArrowUpRight className="w-3 h-3 mr-1" />
+                    +12.5%
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <span className="text-2xl font-bold text-emerald-900">
+                    2,619
+                  </span>
+                  <span className="ml-2 text-sm text-emerald-700">
+                    documents
+                  </span>
+                </div>
+              </div>
 
-            <div className="w-72 h-72 mx-auto">
-              <Doughnut data={doughnutData} ref={doughnutChartRef} />
+              <div className="bg-amber-50 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-amber-900">
+                    Pending
+                  </span>
+                  <span className="flex items-center text-xs font-medium text-amber-600">
+                    <BsArrowDownRight className="w-3 h-3 mr-1" />
+                    -3.2%
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <span className="text-2xl font-bold text-amber-900">
+                    1,432
+                  </span>
+                  <span className="ml-2 text-sm text-amber-700">documents</span>
+                </div>
+              </div>
+
+              <div className="bg-red-50 rounded-xl p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-red-900">
+                    Rejected
+                  </span>
+                  <span className="flex items-center text-xs font-medium text-red-600">
+                    <BsArrowDownRight className="w-3 h-3 mr-1" />
+                    -8.4%
+                  </span>
+                </div>
+                <div className="mt-2">
+                  <span className="text-2xl font-bold text-red-900">892</span>
+                  <span className="ml-2 text-sm text-red-700">documents</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="relative h-[320px] mt-2">
+              <Line
+                data={lineData}
+                options={{
+                  responsive: true,
+                  maintainAspectRatio: false,
+                  interaction: {
+                    mode: "index",
+                    intersect: false,
+                  },
+                  plugins: {
+                    legend: {
+                      display: false,
+                    },
+                    tooltip: {
+                      backgroundColor: "white",
+                      titleColor: "#111827",
+                      bodyColor: "#4B5563",
+                      borderColor: "#E5E7EB",
+                      borderWidth: 1,
+                      padding: 12,
+                      boxPadding: 6,
+                      usePointStyle: true,
+                      callbacks: {
+                        label: function (context) {
+                          let label = context.dataset.label || "";
+                          if (label) {
+                            label += ": ";
+                          }
+                          if (context.parsed.y !== null) {
+                            label += new Intl.NumberFormat("en-US", {
+                              notation: "compact",
+                              compactDisplay: "short",
+                            }).format(context.parsed.y);
+                          }
+                          return label;
+                        },
+                      },
+                    },
+                  },
+                  scales: {
+                    x: {
+                      grid: {
+                        display: false,
+                        drawBorder: false,
+                      },
+                      ticks: {
+                        font: {
+                          size: 12,
+                          family: "Inter",
+                        },
+                        color: "#9CA3AF",
+                        maxRotation: 0,
+                      },
+                    },
+                    y: {
+                      position: "right",
+                      grid: {
+                        color: "#F3F4F6",
+                        drawBorder: false,
+                        lineWidth: 1,
+                      },
+                      ticks: {
+                        font: {
+                          size: 12,
+                          family: "Inter",
+                        },
+                        color: "#9CA3AF",
+                        padding: 12,
+                        callback: function (value) {
+                          return new Intl.NumberFormat("en-US", {
+                            notation: "compact",
+                            compactDisplay: "short",
+                          }).format(value);
+                        },
+                      },
+                      border: {
+                        display: false,
+                      },
+                    },
+                  },
+                  elements: {
+                    line: {
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+              />
             </div>
           </div>
         </div>
-      )}
-      {/* Full-width Big Chart */}
-      {tenantID !== "1" && (
-        <div className="bg-white shadow rounded-lg p-4">
-          <h2 className="text-xl font-semibold mb-4">Revenue Generated</h2>
 
-          <Bar data={bigChartData} ref={bigChartRef} />
+        {/* Document Status Distribution */}
+        <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100">
+          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+            Document Status Distribution
+          </h2>
+          <div className="h-[300px] flex items-center justify-center">
+            <Doughnut
+              data={doughnutData}
+              options={{
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                  legend: {
+                    position: "bottom",
+                  },
+                  title: {
+                    display: true,
+                    text: "Current Document Status",
+                  },
+                },
+              }}
+            />
+          </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

@@ -32,7 +32,7 @@ function Userform() {
 
   const [formData, setFormData] = useState(
     location.state?.userDetails || {
-      // TenantID: 1,
+      TenantID: 1,
       FirstName: "",
       LastName: "",
       Email: "",
@@ -40,24 +40,14 @@ function Userform() {
       PhoneNumber: "",
       Gender: "",
       RoleID: "",
-      AddressLine1: "",
-      AddressLine2: "",
-      CityID: "",
-      StateID: "",
-      CountryID: "",
-      ZipCode: "",
       ProfileImage: null,
       Comments: "",
       StoreID: "",
     }
   );
   const [roles, setRoles] = useState([]);
-  const [countryMap, setCountryMap] = useState({});
   const [StoreMap, setStoreMap] = useState({});
-  const [stateMap, setStateMap] = useState({});
   const [showPassword, setShowPassword] = useState(false);
-
-  const [cityMap, setCityMap] = useState({});
 
   const [query, setQuery] = useState("");
   const [error, setError] = useState("");
@@ -67,43 +57,9 @@ function Userform() {
   const [stores, setStores] = useState([]);
   const [selectedStore, setSelectedStore] = useState("");
 
-  const { citiesData, statesData, countriesData } = useContext(DataContext);
-  const [countries, setCountries] = useState([]);
-  const [states, setStates] = useState([]);
-  const [cities, setCities] = useState([]);
-  const [selectedCountry, setSelectedCountry] = useState("");
-  const [selectedState, setSelectedState] = useState("");
-  const [selectedCity, setSelectedCity] = useState("");
-  const [filteredStates, setFilteredStates] = useState([]);
-  const [filteredCities, setFilteredCities] = useState([]);
   const { userId } = useParams();
 
-  useEffect(() => {
-    if (countriesData && statesData && citiesData) {
-      setCountries(countriesData.data || []);
-      setStates(statesData.data || []);
-      setCities(citiesData.data || []);
-    }
-  }, [countriesData, statesData, citiesData]);
-
-  const fetchRoles = async () => {
-    try {
-      setIsLoading(true);
-      const response = await fetch(GETALLROLESS_API);
-      const data = await response.json();
-      if (data.StatusCode === "SUCCESS") {
-        setRoles(data.roles);
-      }
-    } catch (error) {
-      console.error("Error fetching roles:", error);
-    } finally {
-      setIsLoading(false); // Hide loading animation
-    }
-  };
-
-  useEffect(() => {
-    fetchRoles();
-  }, []);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     if (storesData) {
@@ -138,7 +94,6 @@ function Userform() {
   };
 
   const [selectedGender, setSelectedGender] = useState(formData.Gender || "");
-  const [isLoading, setIsLoading] = useState(false);
 
   const handleGenderChange = (gender) => {
     setSelectedGender(gender);
@@ -149,14 +104,6 @@ function Userform() {
   };
 
   const [selectedRole, setSelectedRole] = useState(formData.RoleID || "");
-
-  // const handleRoleChange = (role) => {
-  //   setSelectedRole(role);
-  //   setFormData((prevFormData) => ({
-  //     ...prevFormData,
-  //     RoleID: role.id,
-  //   }));
-  // };
 
   const handleFormSubmit = async (event) => {
     event.preventDefault();
@@ -263,91 +210,37 @@ function Userform() {
     });
   };
 
-  const handleCountryChange = (selectedCountry) => {
-    if (!selectedCountry) return;
-
-    const countryID =
-      countryMap[selectedCountry.CountryName] || selectedCountry.CountryID;
-
-    setSelectedCountry(selectedCountry);
-    setFormData({
-      ...formData,
-      CountryID: countryID,
-      CountryName: selectedCountry.CountryName,
-    });
-    setSelectedState("");
-    setSelectedCity("");
-    setFilteredStates(
-      states.filter((state) => state.CountryID === selectedCountry.CountryID)
-    );
-  };
-
-  const handleStateChange = (state) => {
-    if (!state) return;
-
-    const stateID = stateMap[state.StateName] || state.StateID;
-
-    setSelectedState(state);
-    setSelectedCity("");
-    setFormData({
-      ...formData,
-      StateID: stateID,
-      StateName: state.StateName,
-    });
-    setFilteredCities(cities.filter((city) => city.StateID === state.StateID));
-  };
-
-  const handleCityChange = (city) => {
-    if (!city) return;
-
-    const cityID = cityMap[city.CityName] || city.CityID;
-
-    setSelectedCity(city);
-    setFormData({
-      ...formData,
-      CityID: cityID,
-      CityName: city.CityName,
-    });
-  };
-
   const [dependenciesLoaded, setDependenciesLoaded] = useState(false);
   const [userDataLoaded, setUserDataLoaded] = useState(false);
- 
- // Initialize state based on localStorage value
-   const [isExpanded, setIsExpanded] = useState(() => {
-    const storedCollapsed = localStorage.getItem('navbar-collapsed');
-    return storedCollapsed !== 'true'; // Default to expanded if not set
+
+  // Initialize state based on localStorage value
+  const [isExpanded, setIsExpanded] = useState(() => {
+    const storedCollapsed = localStorage.getItem("navbar-collapsed");
+    return storedCollapsed !== "true"; // Default to expanded if not set
   });
 
   // Update state when localStorage value changes
   useEffect(() => {
     const handleStorageChange = () => {
-      const storedCollapsed = localStorage.getItem('navbar-collapsed');
-      setIsExpanded(storedCollapsed !== 'true'); // Set expanded if 'navbar-collapsed' is not 'true'
+      const storedCollapsed = localStorage.getItem("navbar-collapsed");
+      setIsExpanded(storedCollapsed !== "true"); // Set expanded if 'navbar-collapsed' is not 'true'
     };
 
     // Add event listener for storage changes
-    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener("storage", handleStorageChange);
 
     // Cleanup event listener on component unmount
     return () => {
-      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
 
-
   // Check if all dependencies (countries, states, cities, stores) are loaded
   useEffect(() => {
-    if (
-      countries?.length &&
-      states?.length &&
-      cities?.length &&
-      stores?.length &&
-      !dependenciesLoaded
-    ) {
+    if (stores?.length && !dependenciesLoaded) {
       setDependenciesLoaded(true); // Set to true only when all dependencies are available
     }
-  }, [countries, states, cities, stores]);
+  }, [stores]);
 
   useEffect(() => {
     const fetchUserDetails = async () => {
@@ -382,41 +275,16 @@ function Userform() {
           return;
         }
 
-        // Ensure dropdown selections are mapped correctly
-        const selectedCountry = countries.find(
-          (country) => country.CountryName === fetchedUserData.CountryName
-        );
-        const selectedState = states.find(
-          (state) => state.StateName === fetchedUserData.StateName
-        );
-        const selectedCity = cities.find(
-          (city) => city.CityName === fetchedUserData.CityName
-        );
-        const selectedGender = genderOptions.find(
-          (g) => g.id === fetchedUserData.Gender
-        );
-        const selectedStore = stores.find(
-          (store) => store.StoreID === fetchedUserData.StoreID
-        );
-
         // Set form data and dropdown selections
         setFormData({
           ...fetchedUserData,
-          CountryID: selectedCountry?.CountryID || null,
-          StateID: selectedState?.StateID || null,
-          CityID: selectedCity?.CityID || null,
-          Gender: selectedGender?.id || null,
-          StoreID: selectedStore?.StoreID || null,
+          StoreID: fetchedUserData.StoreID || null,
         });
 
-        // const selectedRole = roles.find(role => role.RoleID === fetchedUser=Data.RoleID);
-        // setSelectedRole(selectedRole || null);
-
-        setSelectedCountry(selectedCountry);
-        setSelectedState(selectedState);
-        setSelectedCity(selectedCity);
-        setSelectedGender(selectedGender);
-        setSelectedStore(selectedStore);
+        setSelectedStore(
+          stores.find((store) => store.StoreID === fetchedUserData.StoreID) ||
+            null
+        );
         setUserDataLoaded(true);
       } catch (err) {
         console.error("Error fetching user details:", err);
@@ -452,49 +320,25 @@ function Userform() {
     if (!formData.StoreName) {
       newErrors.StoreNameError = "Store Name is required.";
     }
-
     if (!formData.RoleID) {
       newErrors.RoleIdError = "Role is required.";
     }
     if (!formData.FirstName) {
       newErrors.FirstNameError = "First Name is required.";
     }
-    if (!formData.AddressLine1) {
-      newErrors.AddressLine1Error = "Address Line 1 is required.";
-    }
-    // if (!formData.LastName) {
-    //   newErrors.LastNameError = "Last Name is required.";
-    // }
-    // if (!formData.Email) {
-    //   newErrors.EmailError = "Email is required.";
-    // }
     if (!formData.Email) {
       newErrors.EmailError = "Email is required.";
-    } 
-    else {
-      // Additional check to ensure email ends with @gmail.com
+    } else {
       if (!formData.Email.includes("@")) return "Email must include '@'.";
       if (!formData.Email.endsWith(".com")) {
         newErrors.EmailError = "Email must end with '.com'.";
       }
     }
-    if (!formData.CountryID) {
-      newErrors.CountryIdError = "Country is required.";
-    }
     if (!formData.Password) {
       newErrors.PasswordError = "Password is required.";
     }
-    if (!formData.StateID) {
-      newErrors.StateIdError = "State is required.";
-    }
     if (!formData.PhoneNumber) {
       newErrors.PhoneNumberError = "Phone Number is required.";
-    }
-    if (!formData.CityID) {
-      newErrors.CityIdError = "City is required.";
-    }
-    if (!formData.ZipCode) {
-      newErrors.ZipCodeError = "Zip Code is required.";
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length > 0;
@@ -512,6 +356,7 @@ function Userform() {
   return (
     <div className="main-container">
       {/* <div className={`main-container ${isExpanded ? 'expanded' : 'collapsed'}`} > */}
+      <div className="bg-white p-6 rounded-lg shadow-lg">
       <ToastContainer />
       {isLoading && (
         <div className="fixed inset-0 flex items-center justify-center z-50 bg-opacity-50">
@@ -519,84 +364,12 @@ function Userform() {
         </div>
       )}
       <div className="body-container">
-        <form className="w-full " onSubmit={handleFormSubmit}>
+    
+        <form className="w-full" onSubmit={handleFormSubmit}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="heading mb-4 px-24">Users</h2>
+            <h2 className="heading mb-4 px-24 text-custom-brown">Users</h2>
           </div>
           <div className="grid grid-cols-1 gap-y-6 sm:grid-cols-2 sm:gap-x-8 px-16 md:px-24">
-            <div className="w-full xl:w-3/4">
-              <label
-                htmlFor="storeName"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Store Name <span className="text-red-500">*</span>
-              </label>
-              <Combobox value={selectedStore} onChange={handleStoreChange}>
-                <div className="relative mt-1">
-                  <Combobox.Input
-                    id="storeName"
-                    className={`block w-full rounded-md border  py-2 px-4 shadow-sm  sm:text-sm mt-2 mb-1 ${
-                      !formData.StoreName && errors.StoreNameError
-                        ? "border-red-400"
-                        : "border-gray-400"
-                    }`}
-                    displayValue={(store) => store?.StoreName || ""}
-                    placeholder="Select Store"
-                  />
-                  <Combobox.Button className="absolute inset-y-0 right-0 flex items-center pr-2">
-                    <ChevronUpDownIcon
-                      className="h-5 w-5 text-gray-400"
-                      aria-hidden="true"
-                    />
-                  </Combobox.Button>
-                  <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                    {stores.map((store) => (
-                      <Combobox.Option
-                        key={store.StoreID}
-                        className={({ active }) =>
-                          `relative cursor-default select-none py-2 pl-3 pr-9 ${
-                            active
-                              ? "bg-indigo-600 text-white"
-                              : "text-gray-900"
-                          }`
-                        }
-                        value={store} // Pass the entire store object
-                      >
-                        {({ selected, active }) => (
-                          <>
-                            <span
-                              className={`block truncate ${
-                                selected ? "font-semibold" : "font-normal"
-                              }`}
-                            >
-                              {store.StoreName}
-                            </span>
-                            {selected && (
-                              <span
-                                className={`absolute inset-y-0 right-0 flex items-center pr-4 ${
-                                  active ? "text-white" : "text-indigo-600"
-                                }`}
-                              >
-                                <CheckIcon
-                                  className="h-5 w-5"
-                                  aria-hidden="true"
-                                />
-                              </span>
-                            )}
-                          </>
-                        )}
-                      </Combobox.Option>
-                    ))}
-                  </Combobox.Options>
-                </div>
-              </Combobox>
-              {!formData.StoreName && errors.StoreNameError && (
-                <p className="text-red-500 text-sm mt-1 ">
-                  {errors.StoreNameError}
-                </p>
-              )}
-            </div>
-
             <div className="w-full xl:w-3/4">
               <label
                 htmlFor="RoleID"
@@ -614,7 +387,9 @@ function Userform() {
                     id="RoleID"
                     name="RoleID"
                     className={`block w-full rounded-md border  py-2 px-4 shadow-sm  sm:text-sm mt-2 mb-1 ${
-                      !formData.RoleID && errors.RoleIdError ? "border-red-400" : "border-gray-400"
+                      !formData.RoleID && errors.RoleIdError
+                        ? "border-red-400"
+                        : "border-gray-400"
                     }`}
                     onChange={(event) => setQuery(event.target.value)}
                     displayValue={(role) => role?.RoleName || ""}
@@ -674,42 +449,14 @@ function Userform() {
                   onChange={handleFormChange}
                   required
                   className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border  shadow-sm py-2 px-4  sm:text-sm ${
-                    !formData.FirstName && errors.FirstNameError ? "border-red-400" : "border-gray-400"
+                    !formData.FirstName && errors.FirstNameError
+                      ? "border-red-400"
+                      : "border-gray-400"
                   }`}
                 />
                 {!formData.FirstName && errors.FirstNameError && (
                   <p className="text-red-500 text-sm mt-1 ">
                     {errors.FirstNameError}
-                  </p>
-                )}
-              </div>
-            </div>
-            {/* Address Line 1 */}
-            <div className="flex items-center">
-              <div className="w-full ">
-                <label
-                  htmlFor="AddressLine1"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Address Line 1 <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  id="AddressLine1"
-                  name="AddressLine1"
-                  value={formData.AddressLine1 || ""}
-                  onChange={handleFormChange}
-                  required
-                  className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4  sm:text-sm"
-                  ${!formData.AddressLine1 &&
-                    errors.AddressLine1Error
-                      ? "border-red-400"
-                      : "border-gray-400"
-                  }`}
-                />
-                {!formData.AddressLine1 && errors.AddressLine1Error && (
-                  <p className="text-red-500 text-sm mt-1 ">
-                    {errors.AddressLine1Error}
                   </p>
                 )}
               </div>
@@ -730,7 +477,6 @@ function Userform() {
                 value={formData.LastName || ""}
                 onChange={handleFormChange}
                 required
-             
                 className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4  sm:text-sm border-gray-400
                 `}
               />
@@ -741,118 +487,32 @@ function Userform() {
               )} */}
             </div>
 
-            {/* Address Line 2 */}
+            {/* Email */}
             <div>
               <label
-                htmlFor="AddressLine2"
+                htmlFor="Email"
                 className="block text-sm font-medium text-gray-700"
               >
-                Address Line 2
+                Email <span className="text-red-500">*</span>
               </label>
               <input
-                type="text"
-                id="AddressLine2"
-                name="AddressLine2"
-                value={formData.AddressLine2 || ""}
+                type="email"
+                id="Email"
+                name="Email"
+                value={formData.Email || ""}
                 onChange={handleFormChange}
-                className="mt-2 mb-1 block w-full xl:w-3/4 rounded-md border border-gray-400 shadow-sm py-2 px-4 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+                required
+                className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4 sm:text-sm ${
+                  errors.EmailError ? "border-red-400" : "border-gray-400"
+                }`}
               />
-            </div>
-
-             <div>
-    <label
-      htmlFor="Email"
-      className="block text-sm font-medium text-gray-700"
-    >
-      Email <span className="text-red-500">*</span>
-    </label>
-    <input
-      type="email"
-      id="Email"
-      name="Email"
-      value={formData.Email || ""}
-      onChange={handleFormChange}
-      required
-      className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4 sm:text-sm ${
-        errors.EmailError ? "border-red-400" : "border-gray-400"
-      }`}
-    />
-    {errors.EmailError && (
-      <p className="text-red-500 text-sm mt-1">
-        {errors.EmailError}
-      </p>
-    )}
-  </div>
-
-            <div className="flex items-center gap-4">
-              <div className="w-full xl:w-3/4 ">
-                <label
-                  htmlFor="Country"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  Country <span className="text-red-500">*</span>
-                </label>
-                <Combobox
-                  as="div"
-                  value={selectedCountry}
-                  onChange={handleCountryChange}
-                >
-                  <div className="relative">
-                    <Combobox.Input
-                      id="Country"
-                      name="Country"
-                      className={`block w-full rounded-md border  py-2 px-4 shadow-sm  sm:text-sm mt-2 mb-1 ${!formData.CountryID &&
-                        errors.CountryIdError
-                          ? "border-red-400"
-                          : "border-gray-400"
-                      }`}
-                      onChange={(event) => setQuery(event.target.value)} // Set the query for filtering
-                      displayValue={(country) => country?.CountryName || ""} // Display selected country name
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </Combobox.Button>
-
-                    <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full xl:w-3/4 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {countries
-                        .filter((country) =>
-                          country.CountryName.toLowerCase().includes(
-                            query.toLowerCase()
-                          )
-                        )
-                        .map((country) => (
-                          <Combobox.Option
-                            key={country.CountryID}
-                            value={country} // Pass the full country object to onChange
-                            className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-600 hover:text-white"
-                          >
-                            <span className="block truncate font-normal group-data-[selected]:font-semibold">
-                              {country.CountryName}
-                            </span>
-                            <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[focus]:text-white">
-                              <CheckIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          </Combobox.Option>
-                        ))}
-                    </Combobox.Options>
-                  </div>
-                </Combobox>
-                {!formData.CountryID && errors.CountryIdError && (
-                  <p className="text-red-500 text-sm mt-1 ">
-                    {errors.CountryIdError}
-                  </p>
-                )}
-              </div>
+              {errors.EmailError && (
+                <p className="text-red-500 text-sm mt-1">{errors.EmailError}</p>
+              )}
             </div>
 
             {/* Password */}
-            <div className=" xl:w-3/4">
+            <div className="xl:w-3/4">
               <label
                 htmlFor="Password"
                 className="block text-sm font-medium text-gray-700"
@@ -866,8 +526,10 @@ function Userform() {
                   type={showPassword ? "text" : "password"}
                   value={formData.Password || ""}
                   onChange={handleFormChange}
-                  className={`mt-2 mb-1 block w-full  rounded-md border shadow-sm py-2 px-4  sm:text-sm ${ !formData.Password && 
-                    errors.PasswordError ? "border-red-400" : "border-gray-400"
+                  className={`mt-2 mb-1 block w-full  rounded-md border shadow-sm py-2 px-4  sm:text-sm ${
+                    !formData.Password && errors.PasswordError
+                      ? "border-red-400"
+                      : "border-gray-400"
                   }`}
                 />
                 <span
@@ -891,64 +553,6 @@ function Userform() {
               )}
             </div>
 
-            <div className="flex items-center gap-4">
-              <div className="w-full xl:w-3/4 ">
-                <label
-                  htmlFor="State"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  State <span className="text-red-500">*</span>
-                </label>
-                <Combobox
-                  as="div"
-                  value={selectedState}
-                  onChange={handleStateChange}
-                >
-                  <div className="relative">
-                    <Combobox.Input
-                      id="State"
-                      name="State"
-                      className={`block w-full rounded-md border  py-2 px-4 shadow-sm  sm:text-sm mt-2 mb-1 ${ !formData.StateID &&
-                        errors.StateIdError
-                          ? "border-red-400"
-                          : "border-gray-400"
-                      }`}
-                      onChange={(event) => setQuery(event.target.value)} // Handle the search query
-                      displayValue={(state) => state?.StateName || ""} // Show the selected state name
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </Combobox.Button>
-
-                    <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full xl:w-3/4 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {filteredStates.map((state) => (
-                        <Combobox.Option
-                          key={state.StateID}
-                          value={state}
-                          className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-600 hover:text-white"
-                        >
-                          <span className="block truncate font-normal group-data-[selected]:font-semibold">
-                            {state.StateName}
-                          </span>
-                          <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[focus]:text-white">
-                            <CheckIcon className="h-5 w-5" aria-hidden="true" />
-                          </span>
-                        </Combobox.Option>
-                      ))}
-                    </Combobox.Options>
-                  </div>
-                </Combobox>
-                {!formData.StateID && errors.StateIdError && (
-                  <p className="text-red-500 text-sm mt-1 ">
-                    {errors.StateIdError}
-                  </p>
-                )}
-              </div>
-            </div>
-
             {/* Phone Number */}
             <div>
               <label
@@ -964,8 +568,10 @@ function Userform() {
                 value={formData.PhoneNumber || ""}
                 onChange={handleFormChange}
                 required
-                className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border  shadow-sm py-2 px-4  sm:text-sm ${ !formData.PhoneNumber &&
-                  errors.PhoneNumberError ? "border-red-400" : "border-gray-400"
+                className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border  shadow-sm py-2 px-4  sm:text-sm ${
+                  !formData.PhoneNumber && errors.PhoneNumberError
+                    ? "border-red-400"
+                    : "border-gray-400"
                 }`}
               />
               {!formData.PhoneNumber && errors.PhoneNumberError && (
@@ -973,73 +579,6 @@ function Userform() {
                   {errors.PhoneNumberError}
                 </p>
               )}
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="w-full xl:w-3/4 ">
-                <label
-                  htmlFor="City"
-                  className="block text-sm font-medium text-gray-700"
-                >
-                  City <span className="text-red-500">*</span>
-                </label>
-                <Combobox
-                  as="div"
-                  value={selectedCity}
-                  onChange={handleCityChange}
-                >
-                  <div className="relative">
-                    <Combobox.Input
-                      id="City"
-                      name="City"
-                      className={`block w-full rounded-md border  py-2 px-4 shadow-sm  sm:text-sm mt-2 mb-1 ${
-                        !formData.CityID && errors.CityIdError
-                          ? "border-red-400"
-                          : "border-gray-400"
-                      }`}
-                      onChange={(event) => setQuery(event.target.value)} // Handle the search query
-                      displayValue={(city) => city?.CityName || ""} // Show the selected city name
-                    />
-                    <Combobox.Button className="absolute inset-y-0 right-0 flex items-center rounded-r-md px-2 focus:outline-none">
-                      <ChevronUpDownIcon
-                        className="h-5 w-5 text-gray-400"
-                        aria-hidden="true"
-                      />
-                    </Combobox.Button>
-
-                    <Combobox.Options className="absolute z-10 mt-1 max-h-60 w-full xl:w-3/4 overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm">
-                      {filteredCities
-                        .filter((city) =>
-                          city.CityName.toLowerCase().includes(
-                            query.toLowerCase()
-                          )
-                        ) // Filter based on query
-                        .map((city) => (
-                          <Combobox.Option
-                            key={city.CityID}
-                            value={city}
-                            className="group relative cursor-default select-none py-2 pl-3 pr-9 text-gray-900 hover:bg-indigo-600 hover:text-white"
-                          >
-                            <span className="block truncate font-normal group-data-[selected]:font-semibold">
-                              {city.CityName}
-                            </span>
-                            <span className="absolute inset-y-0 right-0 hidden items-center pr-4 text-indigo-600 group-data-[selected]:flex group-data-[focus]:text-white">
-                              <CheckIcon
-                                className="h-5 w-5"
-                                aria-hidden="true"
-                              />
-                            </span>
-                          </Combobox.Option>
-                        ))}
-                    </Combobox.Options>
-                  </div>
-                </Combobox>
-                {!formData.CityID && errors.CityIdError && (
-                  <p className="text-red-500 text-sm mt-1 ">
-                    {errors.CityIdError}
-                  </p>
-                )}
-              </div>
             </div>
 
             {/* Gender */}
@@ -1109,31 +648,6 @@ function Userform() {
               </Combobox>
             </div>
 
-            <div>
-              <label
-                htmlFor="ZipCode"
-                className="block text-sm font-medium text-gray-700"
-              >
-                Zip Code <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                id="ZipCode"
-                name="ZipCode"
-                value={formData.ZipCode || ""}
-                onChange={handleFormChange}
-                required
-                className={`mt-2 mb-1 block w-full xl:w-3/4 rounded-md border shadow-sm py-2 px-4  sm:text-sm ${!formData.ZipCode && 
-                  errors.ZipCodeError ? "border-red-400" : "border-gray-400"
-                }`}
-              />
-              {!formData.ZipCode && errors.ZipCodeError && (
-                <p className="text-red-500 text-sm mt-1 ">
-                  {errors.ZipCodeError}
-                </p>
-              )}
-            </div>
-
             {/* Profile Image */}
             <div>
               <label
@@ -1186,8 +700,8 @@ function Userform() {
               Cancel
             </button>
           </div>
-        </form>
-      
+          </form>
+        </div>
       </div>
     </div>
   );

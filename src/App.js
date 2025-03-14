@@ -16,9 +16,12 @@ import Users from "./Pages/User/User";
 import RoleUser from "./Pages/UserRoles/UserRole";
 import RoleUserAddForm from "./Pages/UserRoles/AddRoleForm";
 import RoleUserEditForm from "./Pages/UserRoles/EditRoleForm";
-import DoucmentsList from "./Pages/Documents/DocumentsList";
+import DocumentsDetails from "./Pages/Documents/DocumentsDetails";
+import DocumentsList from "./Pages/Documents/DocumentsList";
 import Profile from "./Navigation/Profile";
 import Settings from "./Navigation/Settings";
+import "./styles/global.css";
+
 const App = () => {
   return (
     <LoadingProvider>
@@ -131,42 +134,53 @@ const AppWithNavigation = () => {
             }
           />
           <Route
-            path="/doucmentsList"
+            path="/documentsDetails"
             element={
               <ProtectedRoute
                 // allowedRoles={[1]}
                 requiredPermission={PERMISSIONS.VIEW_FEEDBACKS}
               >
-                <DoucmentsList />
+                <DocumentsDetails />
               </ProtectedRoute>
             }
           />
-           <Route
-                                path="/Profile"
-                                element={
-                                  <ProtectedRoute
-                                    // allowedRoles={[1]}
-                                    // requiredPermission={
-                                    //   PERMISSIONS.VIEW_CUSTOMERS
-                                    // }
-                                  >
-                                    <Profile />
-                                  </ProtectedRoute>
-                                }
-                              />
-                                 <Route
-                                path="/Settings"
-                                element={
-                                  <ProtectedRoute
-                                    // allowedRoles={[1]}
-                                    // requiredPermission={
-                                    //   PERMISSIONS.VIEW_CUSTOMERS
-                                    // }
-                                  >
-                                    <Settings />
-                                  </ProtectedRoute>
-                                }
-                              />
+          <Route
+            path="/documentsList"
+            element={
+              <ProtectedRoute
+                // allowedRoles={[1]}
+                requiredPermission={PERMISSIONS.VIEW_FEEDBACKS}
+              >
+                <DocumentsList />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Profile"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              // requiredPermission={
+              //   PERMISSIONS.VIEW_CUSTOMERS
+              // }
+              >
+                <Profile />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Settings"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              // requiredPermission={
+              //   PERMISSIONS.VIEW_CUSTOMERS
+              // }
+              >
+                <Settings />
+              </ProtectedRoute>
+            }
+          />
         </Routes>
       </main>
     </div>

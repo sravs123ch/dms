@@ -28,26 +28,26 @@ const AddRoleForm = () => {
 
   const navigate = useNavigate();
 
-   // Retrieve the navbar-collapsed value from localStorage
-   const storedCollapsed = localStorage.getItem('navbar-collapsed') === 'true';
+  // Retrieve the navbar-collapsed value from localStorage
+  const storedCollapsed = localStorage.getItem("navbar-collapsed") === "true";
 
-   // Set the initial state based on the stored value
-   const [isExpanded, setIsExpanded] = useState(!storedCollapsed);
- 
-   // Toggle the expanded/collapsed state and update localStorage
-   const toggleExpandCollapse = () => {
-     setIsExpanded(!isExpanded);
-     // Save the state to localStorage
-     localStorage.setItem('navbar-collapsed', !isExpanded);
-   };
- 
-   useEffect(() => {
-     // Set the initial state based on the localStorage value
-     const storedCollapsed = localStorage.getItem('navbar-collapsed');
-     if (storedCollapsed !== null) {
-       setIsExpanded(storedCollapsed === 'false');
-     }
-   }, []); // Only run this once on component mount
+  // Set the initial state based on the stored value
+  const [isExpanded, setIsExpanded] = useState(!storedCollapsed);
+
+  // Toggle the expanded/collapsed state and update localStorage
+  const toggleExpandCollapse = () => {
+    setIsExpanded(!isExpanded);
+    // Save the state to localStorage
+    localStorage.setItem("navbar-collapsed", !isExpanded);
+  };
+
+  useEffect(() => {
+    // Set the initial state based on the localStorage value
+    const storedCollapsed = localStorage.getItem("navbar-collapsed");
+    if (storedCollapsed !== null) {
+      setIsExpanded(storedCollapsed === "false");
+    }
+  }, []); // Only run this once on component mount
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
@@ -172,14 +172,11 @@ const AddRoleForm = () => {
       setLoading(false);
     }
   };
-  
 
   return (
     // <div className="px-4 sm:px-6 lg:px-8 pt-4 ml-10 lg:ml-72 w-auto">
     // <div className="main-container">
-    <div
-    className={`main-container ${isExpanded ? 'expanded' : 'collapsed'}`}
-  >
+    <div className={`main-container`}>
       <div className=" p-6 rounded-lg ">
         <ToastContainer />
         {loading && <LoadingAnimation />}
@@ -191,28 +188,6 @@ const AddRoleForm = () => {
         <div className="mb-4 flex flex-col items-center justify-center">
           <div className=" flex flex-col sm:flex-row justify-center items-center w-full ">
             <label className="block font-semibold mr-[14px]">
-              Store Name <span className="text-red-500">*</span>
-            </label>
-            <Select
-              value={storeOptions.find((option) => option.value === storeId)}
-              onChange={handleStoreChange}
-              options={storeOptions}
-              className={`w-full sm:w-1/2 border rounded-md ${
-                errors.StoreIdError && roleData.storeId === "0"
-                  ? "border-red-500"
-                  : "border-gray-300"
-              } `}
-            />
-          </div>
-          <div className="w-full sm:w-1/2 flex justify-center sm:mr-[294px] mt-1 mb-1 ">
-            {errors.StoreIdError && roleData.storeId === "0" && (
-              <p className="text-red-500 text-sm ">{errors.StoreIdError}</p>
-            )}
-          </div>
-        </div>
-        <div className="mb-4 flex flex-col items-center justify-center">
-          <div className=" flex flex-col sm:flex-row justify-center items-center w-full ">
-            <label className="block font-semibold mr-[14px]">
               Role Name <span className="text-red-500">*</span>
             </label>
             <input
@@ -220,7 +195,9 @@ const AddRoleForm = () => {
               value={roleName}
               onChange={(e) => setRoleName(e.target.value)}
               className={`border ${
-                errors.RoleNameError && !roleData.roleName ? "border-red-500" : "border-gray-300"
+                errors.RoleNameError && !roleData.roleName
+                  ? "border-red-500"
+                  : "border-gray-300"
               } p-2 w-full sm:w-1/2 rounded-md`}
               placeholder="Enter Role Name"
             />
@@ -242,34 +219,36 @@ const AddRoleForm = () => {
             return (
               <div
                 key={moduleName}
-                className="border p-4 rounded-lg shadow bg-[#e5efff]"
+                className="border-[0.5px] border-[#ce8c5d] p-4 rounded-lg bg-white shadow-md"
               >
                 <div className="flex justify-between items-center">
-                  <h2 className="text-lg font-bold">{moduleName}</h2>
-                  <label className="text-sm">
+                  <h2 className="text-lg font-bold text-[#8B4513]">
+                    {moduleName}
+                  </h2>
+                  <label className="text-sm flex items-center">
                     <input
                       type="checkbox"
                       checked={isAllSelected}
                       onChange={(e) =>
                         handleSelectAllChange(moduleName, e.target.checked)
                       }
-                      className="mr-2 form-checkbox h-[12px] w-[12px] text-blue-600"
+                      className="mr-2 form-checkbox h-[12px] w-[12px] text-[#8B4513] border-[#8B4513]"
                     />
                     Select All
                   </label>
                 </div>
-                <hr className="border-gray-300 my-4 mt-2 mb-4" />
+                <hr className="border-[#8B4513] opacity-20 my-4 mt-2 mb-4" />
 
                 {permissionsByModule[moduleName].map((permission) => (
                   <div key={permission.ID} className="flex items-center mb-2">
-                    <label>
+                    <label className="flex items-center text-gray-700">
                       <input
                         type="checkbox"
                         checked={permission.IsChecked}
                         onChange={() =>
                           handleCheckboxChange(moduleName, permission.ID)
                         }
-                        className="mr-2 form-checkbox h-[12px] w-[12px] text-blue-600"
+                        className="mr-2 form-checkbox h-[12px] w-[12px] text-[#8B4513] border-[#8B4513]"
                       />
                       {permission.Name}
                     </label>
