@@ -11,7 +11,8 @@ import {
 } from "react-icons/hi";
 import { Menu } from "@headlessui/react";
 import { ChevronDownIcon } from "@heroicons/react/20/solid";
-
+import { FaUserPlus } from "react-icons/fa";
+import { FaFileAlt } from "react-icons/fa";
 const userNavigation = [
   { name: "Your profile", href: "/Profile" },
   { name: "Sign out", href: "/" },
@@ -148,10 +149,33 @@ const Navigation = ({ isNavbarOpen, toggleNavbar }) => {
               )}
             </Link>
 
+            <Link
+              to="/Reference"
+              className={`flex items-center gap-3 p-3 hover:bg-[#8B4513]/50 text-white ${
+                location.pathname === "/Reference" && "bg-[#8B4513]/30"
+              }`}
+            >
+              <FaUserPlus className="text-xl" />
+              {isNavbarOpen && (
+                <span className="text-sm font-medium">Reference</span>
+              )}
+            </Link>
+
+            <Link
+              to="/Project"
+              className={`flex items-center gap-3 p-3 hover:bg-[#8B4513]/50 text-white ${
+                location.pathname === "/Project" && "bg-[#8B4513]/30"
+              }`}
+            >
+              <FaFileAlt className="text-xl" />
+              {isNavbarOpen && (
+                <span className="text-sm font-medium">Project Types</span>
+              )}
+            </Link>
             {/* Settings Link - Moved higher with margin-top */}
-            <div className="mt-96">
+            <div className="mt-80">
               <Link
-                to="/settings"
+                // to="/settings"
                 className={`flex items-center gap-3 p-3 hover:bg-[#8B4513]/50 text-white ${
                   location.pathname === "/settings" && "bg-[#8B4513]/30"
                 }`}

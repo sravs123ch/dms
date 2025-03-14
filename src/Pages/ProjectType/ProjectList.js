@@ -12,7 +12,7 @@ import { getProjects, deleteProjectType } from "../../Constants/apiRoutes";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
 import { toast, ToastContainer } from 'react-toastify';
 import { IoEllipsisHorizontalCircleSharp } from "react-icons/io5";
-import LoadingAnimation from "../../components/Loading/LoadingAnimation";
+import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
 import 'react-toastify/dist/ReactToastify.css';
 import { IoEllipsisVertical } from 'react-icons/io5'; // Add this import
 
@@ -156,7 +156,7 @@ const ProjectTable = () => {
      });
   return (
     // <div ref={dropdownRef} className="main-container">
-    <div ref={dropdownRef} className={`main-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
+    <div ref={dropdownRef} className={`main-container`}>
       <ToastContainer />{loading && <LoadingAnimation />}
       <div className="body-container">
         <h2 className="heading">Projects</h2>

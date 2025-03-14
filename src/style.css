@@ -35,7 +35,7 @@
 }
 
 .heading {
-  @apply text-2xl font-semibold;
+  @apply text-2xl font-semibold text-[#8b4513];
 }
 
 .search-button-group {

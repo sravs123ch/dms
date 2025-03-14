@@ -277,7 +277,7 @@ const DocumentsList = () => {
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-[#8B4513]">
+          <h2 className="heading">
             Documents
           </h2>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">

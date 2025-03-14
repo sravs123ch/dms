@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import LoadingAnimation from "../../components/Loading/LoadingAnimation";
+import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
 import { createProject, updateProject, getProjectTypeById } from "../../Constants/apiRoutes";
 import { useParams } from "react-router-dom";
 import { RiCloseLine } from 'react-icons/ri';
@@ -250,7 +250,7 @@ const AddProject = () => {
         setLoading(false);
     };
     return (
-        <div className="px-4 sm:px-6 lg:px-8 pt-4 sm:ml-10 lg:ml-56 w-auto mt-4 p-6 rounded-lg">
+        <div className="main-container">
               
             <div className="mt-6 p-6 bg-white">
                 <ToastContainer />
@@ -367,7 +367,7 @@ const AddProject = () => {
 
 
                     {/* Submit Button */}
-                    <div className="mt-6 flex ml-28 justify-center space-x-4">
+                    <div className="mt-6 flex ml-96 justify-center space-x-4">
                         <button
                             type="button"
                             className="button-base save-btn"
@@ -379,7 +379,7 @@ const AddProject = () => {
                         <button
                             type="button"
                             onClick={handleCancel}
-                            className="inline-flex justify-center rounded-md border border-transparent bg-red-500 py-2 px-4 text-sm font-medium text-white hover:text-black shadow-sm hover:bg-red-200"
+                             className="button-base save-btn"
                         >
                             Cancel
                         </button>

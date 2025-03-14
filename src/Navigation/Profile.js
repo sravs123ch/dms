@@ -731,7 +731,7 @@ const Profile = () => {
   };
 
   return (
-    <div className={`main-container ${isExpanded ? "expanded" : "collapsed"}`}>
+    <div className={`main-container`}>
       <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center">
         <h2 className="text-2xl font-semibold">Profile</h2>
       </div>

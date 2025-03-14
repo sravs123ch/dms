@@ -12,7 +12,7 @@ import { FaPlus, FaTable } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import { AiOutlineEdit } from "react-icons/ai";
 import * as XLSX from "xlsx";
-import { StoreContext } from "../../Context/storeContext";
+// import { StoreContext } from "../../Context/storeContext";
 import axios from "axios";
 import {
   DELETESTORESSBYID_API,
@@ -25,9 +25,9 @@ import {
   StyledTableCell,
   StyledTableRow,
   TablePaginationActions,
-} from "../CustomTablePagination";
-import LoadingAnimation from "../../components/Loading/LoadingAnimation";
-import ReferenceSubReferenceForm from "../../components/Reference/Referform";
+} from "../../Components/CustomTablePagination";
+import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
+import ReferenceSubReferenceForm from "../../Pages/Reference/Referform";
 import { useReference } from "../../Context/ReferContext";
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -38,7 +38,7 @@ function Stores() {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [searchName, setSearchName] = useState("");
   const [totalStores, setTotalStores] = useState(0);
-  const { setStoreDetails } = useContext(StoreContext);
+  // const { setStoreDetails } = useContext(StoreContext);
   const navigate = useNavigate();
   const [paginatedPeople, setPaginatedPeople] = useState([]);
   const [filteredStores, setFilteredStores] = useState([]);

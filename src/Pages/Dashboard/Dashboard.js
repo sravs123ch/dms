@@ -465,7 +465,7 @@ const Dashboard = () => {
 
       {/* Header Controls */}
       <div className="flex flex-col md:flex-row justify-between items-center gap-4 mb-8">
-        <h1 className="text-2xl font-bold text-gray-800">
+        <h1 className="heading">
           Document Management
         </h1>
         <div className="flex flex-wrap items-center gap-4">

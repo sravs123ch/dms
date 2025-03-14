@@ -21,6 +21,11 @@ import DocumentsList from "./Pages/Documents/DocumentsList";
 import Profile from "./Navigation/Profile";
 import Settings from "./Navigation/Settings";
 import "./styles/global.css";
+import Reference from "./Pages/Reference/Refer";
+import Referenceform from "./Pages/Reference/Referform";
+import { ReferenceProvider } from "./Context/ReferContext";
+import Project from "./Pages/ProjectType/ProjectList";
+import ProjectCreation from "./Pages/ProjectType/Project";
 
 const App = () => {
   return (
@@ -28,7 +33,9 @@ const App = () => {
       <UserProvider>
         <DataProvider>
           <RoleProvider>
+          <ReferenceProvider>
             <AppWithNavigation />
+            </ReferenceProvider>
           </RoleProvider>
         </DataProvider>
       </UserProvider>
@@ -181,6 +188,65 @@ const AppWithNavigation = () => {
               </ProtectedRoute>
             }
           />
+            <Route
+                                path="/Reference"
+                                element={
+                                  <ProtectedRoute
+                                    // allowedRoles={[1]}
+                                    requiredPermission={PERMISSIONS.VEIW_REFERENCES}
+                                  >
+                                  <Reference />
+                                  </ProtectedRoute>
+                                }
+                              />
+                               <Route
+                                // path="/OrdersAdd/:orderId"
+                                path="/Referenceform/:ReferId"
+                                element={
+                                  <ProtectedRoute
+                                    // allowedRoles={[1]}
+                                    requiredPermission={
+                                      PERMISSIONS.ADD_STORE ||
+                                      PERMISSIONS.EDIT_STORE ||
+                                      PERMISSIONS.DELETE_STORE
+                                    }
+                                  >
+                                    <Referenceform />
+                                  </ProtectedRoute>
+                                }
+                              />
+                                <Route
+                                path="/ProjectCreation"
+                                element={
+                                  <ProtectedRoute
+                                    // allowedRoles={[1]}
+                                    requiredPermission={PERMISSIONS.ADD_PROJECTYPE}
+                                  >
+                                    <ProjectCreation />
+                                  </ProtectedRoute>
+                                }
+                              /> <Route
+                              path="/Project"
+                              element={
+                                <ProtectedRoute
+                                  // allowedRoles={[1]}
+                                  requiredPermission={PERMISSIONS.VIEW_PROJECTTYPE}
+                                >
+                                  <Project />
+                                </ProtectedRoute>
+                              }
+                            />
+                             <Route
+                              path="/ProjectCreation/:ProjectTypeID"
+                              element={
+                                <ProtectedRoute
+                                  // allowedRoles={[1]}
+                                  requiredPermission={PERMISSIONS.EDIT_PROJECTYPE}
+                                >
+                                  <ProjectCreation />
+                                </ProtectedRoute>
+                              }
+                            />
         </Routes>
       </main>
     </div>
