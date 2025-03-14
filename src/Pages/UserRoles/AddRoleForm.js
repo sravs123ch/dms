@@ -48,23 +48,84 @@ const AddRoleForm = () => {
       setIsExpanded(storedCollapsed === "false");
     }
   }, []); // Only run this once on component mount
+  // useEffect(() => {
+  //   const fetchPermissions = async () => {
+  //     try {
+  //       setLoading(true);
+
+  //       const response = await axios.get(FETCH_PERMISSION_URL);
+  //       const data = response.data;
+  //       const categorizedPermissions = {};
+
+  //       if (data.Permissions && Array.isArray(data.Permissions)) {
+  //         data.Permissions.forEach((permission) => {
+  //           if (!categorizedPermissions[permission.Module]) {
+  //             categorizedPermissions[permission.Module] = [];
+  //           }
+  //           categorizedPermissions[permission.Module].push(permission);
+  //         });
+  //       }
+
+  //       setPermissionsByModule(categorizedPermissions);
+  //       console.log(categorizedPermissions);
+  //       console.log(permissionsByModule);
+  //     } catch (err) {
+  //       setError("Failed to fetch permissions");
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+
+  //   fetchPermissions();
+  // }, []);
+  
   useEffect(() => {
     const fetchPermissions = async () => {
       try {
         setLoading(true);
 
-        const response = await axios.get(FETCH_PERMISSION_URL);
-        const data = response.data;
+        const staticPermissions = [
+          // Menu Management
+          { ID: 90, Module: "Menu Management", Name: "Dashboard", Code: "ACCESS_DASBOARD", IsChecked: false },
+          { ID: 101, Module: "Menu Management", Name: "Users", Code: "ACCESS_USERS", IsChecked: false },
+          { ID: 102, Module: "Menu Management", Name: "UserRoles", Code: "ACCESS_USERROLES", IsChecked: false },
+          { ID: 103, Module: "Menu Management", Name: "View Project Type", Code: "VIEW_PROJECT_TYPE", IsChecked: false },
+          { ID: 104, Module: "Menu Management", Name: "View Reference", Code: "ACCESS_REFERENCES", IsChecked: false },
+        
+          // User Management
+          { ID: 201, Module: "User Management", Name: "Add User", Code: "ADD_USER", IsChecked: false },
+          { ID: 202, Module: "User Management", Name: "Edit User", Code: "EDIT_USER", IsChecked: false },
+          { ID: 203, Module: "User Management", Name: "Delete User", Code: "DELETE_USER", IsChecked: false },
+          { ID: 204, Module: "User Management", Name: "View Users", Code: "VIEW_USERS", IsChecked: false },
+        
+          // Role Management
+          { ID: 301, Module: "Role Management", Name: "Add Role", Code: "ADD_ROLE", IsChecked: false },
+          { ID: 302, Module: "Role Management", Name: "Edit Role", Code: "EDIT_ROLE", IsChecked: false },
+          { ID: 303, Module: "Role Management", Name: "Delete Role", Code: "DELETE_ROLE", IsChecked: false },
+          { ID: 304, Module: "Role Management", Name: "View Roles", Code: "VIEW_ROLES", IsChecked: false },
+        
+          // Project Type Management
+          { ID: 401, Module: "Project Type Management", Name: "Add Project Type", Code: "ADD_PROJECT_TYPE", IsChecked: false },
+          { ID: 402, Module: "Project Type Management", Name: "Edit Project Type", Code: "EDIT_PROJECT_TYPE", IsChecked: false },
+          { ID: 403, Module: "Project Type Management", Name: "Delete Project Type", Code: "DELETE_PROJECT_TYPE", IsChecked: false },
+          { ID: 404, Module: "Project Type Management", Name: "View Project Types", Code: "VIEW_PROJECT_TYPES", IsChecked: false },
+        
+          // Reference Management
+          { ID: 501, Module: "Reference Management", Name: "Add Reference", Code: "ADD_REFERENCE", IsChecked: false },
+          { ID: 502, Module: "Reference Management", Name: "Edit Reference", Code: "EDIT_REFERENCE", IsChecked: false },
+          { ID: 503, Module: "Reference Management", Name: "Delete Reference", Code: "DELETE_REFERENCE", IsChecked: false },
+          { ID: 504, Module: "Reference Management", Name: "View References", Code: "VIEW_REFERENCES", IsChecked: false },
+        ];
+      
+        
+        // Categorizing permissions by module
         const categorizedPermissions = {};
-
-        if (data.Permissions && Array.isArray(data.Permissions)) {
-          data.Permissions.forEach((permission) => {
-            if (!categorizedPermissions[permission.Module]) {
-              categorizedPermissions[permission.Module] = [];
-            }
-            categorizedPermissions[permission.Module].push(permission);
-          });
-        }
+        staticPermissions.forEach((permission) => {
+          if (!categorizedPermissions[permission.Module]) {
+            categorizedPermissions[permission.Module] = [];
+          }
+          categorizedPermissions[permission.Module].push(permission);
+        });
 
         setPermissionsByModule(categorizedPermissions);
       } catch (err) {
@@ -76,6 +137,7 @@ const AddRoleForm = () => {
 
     fetchPermissions();
   }, []);
+
   let roleData = {
     roleId: 0,
     roleName: roleName,
@@ -260,18 +322,22 @@ const AddRoleForm = () => {
         </div>
 
         <div className="mt-10 flex flex-col sm:flex-row justify-end space-y-4 sm:space-y-0 sm:space-x-4">
+        
           <button
-            className="bg-gray-200 px-4 py-2 rounded shadow w-full sm:w-auto"
-            onClick={handleClose}
-          >
-            Close
-          </button>
-          <button
-            className="bg-[#003375] text-white px-4 py-2 rounded shadow w-full sm:w-auto"
-            onClick={handleSaveRole}
-          >
-            Save Role
-          </button>
+onClick={handleClose}
+  className="flex items-center justify-center px-4 py-2 bg-gradient-to-br from-[#8B4513] to-[#D2691E] text-white rounded-lg hover:from-[#A0522D] hover:to-[#D2691E] transition-all duration-300 w-full sm:w-auto"
+>
+  
+  Close
+</button>
+
+<button
+  onClick={handleSaveRole}
+  className="flex items-center justify-center px-4 py-2 bg-gradient-to-br from-[#8B4513] to-[#D2691E] text-white rounded-lg hover:from-[#A0522D] hover:to-[#D2691E] transition-all duration-300 w-full sm:w-auto"
+>
+ 
+  Save Role
+</button>
         </div>
       </div>
     </div>

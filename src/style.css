@@ -238,7 +238,13 @@
 }
 
 .save-btn:hover {
-  @apply bg-custom-lightblue text-black;
+  @apply text-white;
+  background: linear-gradient(
+    to right,
+    var(--primary-brown),
+    var(--secondary-brown)
+  );
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .save-btn:focus {
@@ -252,7 +258,7 @@
 }
 
 .cancel-btn:hover {
-  @apply bg-red-600 text-black;
+  @apply bg-red-600 text-white;
 }
 
 .cancel-btn:focus {

@@ -237,7 +237,7 @@ function User() {
                 <StyledTableCell>Name</StyledTableCell>
                 <StyledTableCell>Mobile</StyledTableCell>
                 <StyledTableCell>Roles</StyledTableCell>
-                <StyledTableCell>Gender</StyledTableCell>
+                <StyledTableCell>Country</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -246,11 +246,7 @@ function User() {
                 <StyledTableRow key={user.UserID}>
                   <StyledTableCell>
                     <div className="flex items-center">
-                      <img
-                        src={user.ProfileImage || UserIcone}
-                        alt="Profile"
-                        className="h-10 w-10 rounded-full object-cover mr-2"
-                      />
+                     
                       <span>{`${user.FirstName} ${user.LastName}`}</span>
                     </div>
                   </StyledTableCell>
@@ -266,7 +262,7 @@ function User() {
                     </span>
                   </StyledTableCell>
                   <StyledTableCell>
-                    {user.Gender === "M" ? "Male" : "Female"}
+                 India
                   </StyledTableCell>
 
                   <StyledTableCell colSpan={2}>

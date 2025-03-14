@@ -169,11 +169,11 @@ const Login = () => {
         ]);
 
         // Now that all data is loaded, navigate to the dashboard
-        // navigate("/dashboard");
+        navigate("/dashboard");
         // Add a 5-second delay before navigation
-        setTimeout(() => {
-          navigate("/dashboard");
-        }, 3000); // 5 seconds delay
+        // setTimeout(() => {
+        //   navigate("/dashboard");
+        // }, 3000); // 5 seconds delay
       } else {
         console.error("Login failed:", data.message);
         setError(data.message);
@@ -182,9 +182,9 @@ const Login = () => {
       console.error("Login error:", error);
       setError("An error occurred during login");
     } finally {
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 10000); // 5 seconds delay
+      // setTimeout(() => {
+      //   setIsLoading(false);
+      // }, 10000); // 5 seconds delay
     }
   };
 

@@ -249,9 +249,9 @@ function UserRoles() {
         <Table sx={{ width: "100%", tableLayout: "fixed" }}>
           <TableHead>
             <TableRow>
-              <StyledTableCell align="left">Role ID</StyledTableCell>
+              {/* <StyledTableCell align="left">Role ID</StyledTableCell> */}
               <StyledTableCell align="left">Name</StyledTableCell>
-              <StyledTableCell align="center">Store Name</StyledTableCell>
+              <StyledTableCell align="center">Company Name</StyledTableCell>
               <StyledTableCell align="center">Status</StyledTableCell>
               <StyledTableCell align="center" colSpan={2}>
                 Actions
@@ -264,7 +264,7 @@ function UserRoles() {
             ) : (
               roles.map((row) => (
                 <StyledTableRow key={row.RoleID}>
-                  <StyledTableCell align="left">{row.RoleID}</StyledTableCell>
+                  {/* <StyledTableCell align="left">{row.RoleID}</StyledTableCell> */}
                   <StyledTableCell align="left">{row.RoleName}</StyledTableCell>
                   <StyledTableCell align="center">
                     {row.StoreName}

@@ -50,7 +50,7 @@ const DocumentsDetails = () => {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
-  const [signature, setSignature] = useState("");
+  const [selectedStatus, setSelectedStatus] = useState("");
 
   const { storesData } = useContext(DataContext);
   const [stores, setStores] = useState([]);
@@ -240,20 +240,24 @@ const DocumentsDetails = () => {
     setPageNumber(pageNumber + 1 >= numPages ? numPages : pageNumber + 1);
   };
 
+  // Filter documents based on selected status
+  const filteredDocuments = documents.filter((doc) => {
+    if (!selectedStatus) return true; // Show all if no status is selected
+    return doc.approvals.some((approval) => approval.status === selectedStatus);
+  });
+
   return (
-    <div className="flex h-screen bg-white mt-10 overflow-x-hidden">
+    <div className="flex h-screen bg-white mt-10">
       {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0">
+      <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className="border-b p-4 flex items-center justify-between flex-wrap gap-4">
-          <div className="flex items-center space-x-4 flex-wrap">
+        <div className="border-b p-4 flex items-center justify-between">
+          <div className="flex items-center space-x-4">
             <button className="p-2 hover:bg-gray-100 rounded">
               <HiArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-lg font-medium truncate max-w-[200px]">
-              {documentData.title}
-            </h1>
-            <span className="text-gray-500 text-sm whitespace-nowrap">
+            <h1 className="text-lg font-medium">{documentData.title}</h1>
+            <span className="text-gray-500 text-sm">
               by {documentData.creator} (Creator)
             </span>
           </div>
@@ -268,7 +272,7 @@ const DocumentsDetails = () => {
         </div>
 
         {/* Toolbar */}
-        <div className="border-b p-2 flex items-center space-x-4 overflow-x-auto">
+        <div className="border-b p-2 flex items-center space-x-4">
           <div className="flex items-center space-x-2">
             <button className="p-1 hover:bg-gray-100 rounded">
               <HiOutlineRefresh className="w-4 h-4" />
@@ -350,16 +354,25 @@ const DocumentsDetails = () => {
               <FaAlignRight />
             </button>
           </div>
+          <div className="flex items-center space-x-2 border-l pl-2">
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="p-2 border rounded"
+            >
+              <option value="">All</option>
+              <option value="Approved">Approved</option>
+              <option value="Pending">Pending</option>
+              <option value="Rejected">Rejected</option>
+            </select>
+          </div>
         </div>
 
         {/* Document Content */}
-        <div className="flex-1 p-4 sm:p-8 overflow-y-auto overflow-x-hidden">
-          <div className="max-w-4xl mx-auto w-full">
+        <div className="flex-1 p-8 overflow-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="mb-8">
-              <div
-                className="pdf-container bg-white rounded-lg shadow-sm p-4"
-                style={{ height: "80vh", overflowY: "scroll" }}
-              >
+              <div className="pdf-container bg-white rounded-lg shadow-sm p-4">
                 <Document
                   file={pdf}
                   onLoadSuccess={onDocumentLoadSuccess}
@@ -375,26 +388,33 @@ const DocumentsDetails = () => {
                   }}
                 >
                   <Page
-                    pageNumber={1}
-                    scale={1}
-                    className="shadow-lg max-w-full"
+                    pageNumber={pageNumber}
+                    scale={scale}
+                    className="shadow-lg"
                     renderTextLayer={false}
                     renderAnnotationLayer={false}
                   />
                 </Document>
+                <div className="flex justify-center items-center space-x-4 mt-4">
+                  <button
+                    onClick={handlePrevPage}
+                    disabled={pageNumber <= 1}
+                    className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                  >
+                    Previous
+                  </button>
+                  <span className="text-sm">
+                    Page {pageNumber} of {numPages}
+                  </span>
+                  <button
+                    onClick={handleNextPage}
+                    disabled={pageNumber >= numPages}
+                    className="px-3 py-1 rounded bg-gray-100 hover:bg-gray-200 disabled:opacity-50"
+                  >
+                    Next
+                  </button>
+                </div>
               </div>
-            </div>
-
-            {/* Signature Input */}
-            <div className="mt-4">
-              <h3 className="text-lg font-medium mb-2">Signature</h3>
-              <input
-                type="text"
-                value={signature}
-                onChange={(e) => setSignature(e.target.value)}
-                placeholder="Enter your signature"
-                className="border rounded p-2 w-full"
-              />
             </div>
 
             {/* Editor for Annotations */}
@@ -433,7 +453,7 @@ const DocumentsDetails = () => {
       </div>
 
       {/* Right Sidebar */}
-      <div className="w-80 border-l bg-gray-50 overflow-y-auto">
+      <div className="w-80 border-l bg-gray-50">
         <div className="p-4">
           <h2 className="font-semibold mb-4 text-gray-800">Status</h2>
           <div className="space-y-4">
@@ -462,28 +482,6 @@ const DocumentsDetails = () => {
                     {dept.status}
                   </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="p-4 border-t bg-white">
-          <h2 className="font-semibold mb-4 text-gray-800">Comments</h2>
-          <div className="space-y-4">
-            {departments.map((dept) => (
-              <div key={dept.id} className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-600 font-medium">
-                    {dept.user.charAt(0)}
-                  </div>
-                  <div>
-                    <div className="font-medium text-sm text-gray-800">
-                      {dept.name}
-                    </div>
-                    <div className="text-sm text-gray-500">{dept.user}</div>
-                  </div>
-                </div>
-                <p className="text-sm text-gray-600 pl-10">{dept.comment}</p>
               </div>
             ))}
           </div>

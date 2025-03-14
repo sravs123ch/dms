@@ -195,7 +195,7 @@ function Userform() {
 
     // Add a small delay before navigating to show the loader
     setTimeout(() => {
-      navigate("/user");
+      navigate("/users");
     }, 1500); // Delay by 500ms
   };
 
@@ -695,7 +695,7 @@ function Userform() {
             <button
               type="button"
               onClick={handleCancel}
-              className="button-base cancel-btn"
+               className="button-base save-btn"
             >
               Cancel
             </button>

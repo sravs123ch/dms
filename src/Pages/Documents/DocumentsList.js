@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { Combobox } from "@headlessui/react";
 import {
   CheckIcon,
@@ -7,7 +7,7 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@heroicons/react/20/solid";
-import Datepicker from "react-tailwindcss-datepicker";
+// import Datepicker from "react-tailwindcss-datepicker";
 import axios from "axios";
 import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
 import { getAllFeedbacksAPI } from "../../Constants/apiRoutes";
@@ -63,7 +63,7 @@ const DocumentsList = () => {
       projectType: "Finance",
       status: "Rejected",
       uploadDate: "2024-03-13",
-      fileType: "excel",
+      fileType: "pdf",
     },
     {
       id: 4,
@@ -90,7 +90,7 @@ const DocumentsList = () => {
       projectType: "Sales",
       status: "Approved",
       uploadDate: "2024-03-10",
-      fileType: "excel",
+      fileType: "pdf",
     },
   ];
 
@@ -116,8 +116,8 @@ const DocumentsList = () => {
         return <FaFilePdf className="text-red-500 text-xl" />;
       case "word":
         return <FaFileWord className="text-blue-500 text-xl" />;
-      case "excel":
-        return <FaFilePdf className="text-red-500 text-xl" />;
+      // case "excel":
+      //   return <FaFileExcel className="text-green-500 text-xl" />;
       default:
         return <FaFile className="text-gray-500 text-xl" />;
     }
@@ -264,7 +264,14 @@ const DocumentsList = () => {
 
     return buttons;
   };
+  const handleNavigation = () => {
+    navigate("/documentsDetails");
+  };
 
+  const filteredDocuments = [...staticDocuments, ...uploadedDocuments].filter((doc) => {
+    if (!selectedStatus || selectedStatus === "All") return true; // Show all if no status is selected or "All" is selected
+    return doc.status === selectedStatus;
+  });
   return (
     <div className="main-container">
       <div className="max-w-7xl mx-auto">
@@ -306,7 +313,7 @@ const DocumentsList = () => {
                   <ChevronUpDownIcon className="h-5 w-5 text-gray-400" />
                 </Combobox.Button>
                 <Combobox.Options className="absolute z-10 mt-1 w-full bg-white rounded-lg shadow-lg border border-gray-200 py-1 max-h-60 overflow-auto">
-                  {["Approved", "Pending", "Rejected"].map((status) => (
+                  {["All", "Approved", "Pending", "Rejected"].map((status) => (
                     <Combobox.Option
                       key={status}
                       value={status}
@@ -323,7 +330,7 @@ const DocumentsList = () => {
               </div>
             </Combobox>
           </div>
-          <div className="w-full sm:flex-1 sm:max-w-md">
+          {/* <div className="w-full sm:flex-1 sm:max-w-md">
             <Datepicker
               value={value}
               onChange={(newValue) => setValue(newValue)}
@@ -331,22 +338,22 @@ const DocumentsList = () => {
               primaryColor="brown"
               inputClassName="w-full p-2.5 text-sm border rounded-lg border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8B4513]/20"
             />
-          </div>
+          </div> */}
         </div>
 
         {/* Documents Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {currentItems.map((doc) => (
+          {filteredDocuments.map((doc) => (
             <div
               key={doc.id}
               className="bg-white rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-300"
             >
               <div className="p-4 sm:p-6">
-                <Link
-                  to="/documentsDetails"
-                  className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0 mb-4"
-                >
-                  <div className="flex items-start space-x-3">
+                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0 mb-4">
+                  <div
+                    className="flex items-start space-x-3 cursor-pointer"
+                    onClick={handleNavigation}
+                  >
                     {getFileIcon(doc.fileType)}
                     <div className="min-w-0 flex-1">
                       <h3 className="font-semibold text-gray-800 line-clamp-1 text-sm sm:text-base">
@@ -368,7 +375,7 @@ const DocumentsList = () => {
                   >
                     {doc.status}
                   </span>
-                </Link>
+                </div>
 
                 <div className="space-y-2 mb-4">
                   <div className="flex justify-between text-xs sm:text-sm">

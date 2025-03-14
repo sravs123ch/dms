@@ -3,6 +3,7 @@ import { Chart, registerables } from "chart.js";
 import { Line, Doughnut } from "react-chartjs-2";
 import { FaFileSignature, FaFileAlt, FaFilePdf } from "react-icons/fa";
 import { MdPendingActions } from "react-icons/md";
+import { LuFileX } from "react-icons/lu";
 import {
   BsFileEarmarkCheck,
   BsArrowUpRight,
@@ -17,7 +18,7 @@ import {
   DashboardOrderStatus,
   CustomerStatusCount,
 } from "../../Constants/apiRoutes";
-import Datepicker from "react-tailwindcss-datepicker";
+// import Datepicker from "react-tailwindcss-datepicker";
 import { GET_SALES_AND_PAYMENT_REPORT_BY_MONTH } from "../../Constants/apiRoutes";
 import axios from "axios";
 import "chart.js/auto";
@@ -503,7 +504,7 @@ const Dashboard = () => {
             </Combobox>
           </div>
 
-          <div className="w-72">
+          {/* <div className="w-72">
             <Datepicker
               value={value}
               onChange={(newValue) => setValue(newValue)}
@@ -511,7 +512,7 @@ const Dashboard = () => {
               primaryColor="blue"
               inputClassName="h-10 w-full rounded-lg border border-gray-300"
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -569,7 +570,7 @@ const Dashboard = () => {
         <div className="bg-white rounded-xl shadow-sm p-6 border border-gray-100 hover:shadow-md transition-shadow">
           <div className="flex items-center">
             <div className="p-3 bg-red-100 rounded-lg">
-              <FaFilePdf className="h-6 w-6 text-red-600" />
+              <LuFileX className="h-6 w-6 text-red-600" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500">
