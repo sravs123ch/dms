@@ -236,14 +236,15 @@ const ReferenceSubReferenceForm = ({onClose}) => {
           <button
             type="button"
             onClick={handleSave}
-            className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow hover:bg-blue-500 transition focus:outline-none focus:ring-2 focus:ring-blue-300"
+            // className="px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg shadow hover:bg-blue-500 transition focus:outline-none focus:ring-2 focus:ring-blue-300"
+            className="button-base save-btn"
           >
             {referenceId === "new" ? "Save" : "Update"}
           </button>
           <button
             type="button"
             onClick={handleClose}
-            className="px-6 py-2 bg-red-500 text-white text-sm font-medium rounded-lg shadow hover:bg-red-400 transition focus:outline-none focus:ring-2 focus:ring-red-300"
+           className="button-base save-btn"
           >
             Cancel
           </button>
