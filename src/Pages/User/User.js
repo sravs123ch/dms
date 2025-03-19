@@ -89,28 +89,32 @@ function User() {
 
   useEffect(() => {
     fetchUsers();
-  }, [page, rowsPerPage, searchName, stores, selectedStore]);
+  }, [page, rowsPerPage, searchName]);
 
   const fetchUsers = async () => {
     setIsLoading(true);
     try {
-      const storeIDs = selectedStore
-        ? [selectedStore.StoreID]
-        : stores.map((store) => store.StoreID);
-      if (!storeIDs || storeIDs.length === 0) {
-        setIsLoading(false);
-        return;
+      const token = localStorage.getItem("token");
+      if (!token) {
+        throw new Error("No authentication token found");
       }
-      const { users, totalCount } = await getAllUsers(
-        page,
-        rowsPerPage,
-        searchName,
-        storeIDs
-      );
-      setUsers(users);
-      setTotalUsers(totalCount);
+
+      const response = await axios.get(GETALLUSERS_API, {
+        params: {
+          pageNumber: page + 1,
+          pageSize: rowsPerPage,
+          SearchText: searchName,
+        },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      setUsers(response.data.users);
+      setTotalUsers(response.data.totalItems);
     } catch (error) {
-      console.error("Failed to fetch users", error);
+      console.error("Error fetching users:", error);
     } finally {
       setIsLoading(false);
     }
@@ -218,7 +222,7 @@ function User() {
             </ul>
           </div>
         </div>
-        <div className="flex items-center mb-4">
+        <div className="flex items-center mb-4 mt-4">
           <div className="relative w-full max-w-xs">
             <input
               type="text"
@@ -235,9 +239,9 @@ function User() {
             <TableHead>
               <TableRow>
                 <StyledTableCell>Name</StyledTableCell>
-                <StyledTableCell>Mobile</StyledTableCell>
                 <StyledTableCell>Roles</StyledTableCell>
                 <StyledTableCell>Country</StyledTableCell>
+                <StyledTableCell>Function</StyledTableCell>
                 <StyledTableCell>Actions</StyledTableCell>
               </TableRow>
             </TableHead>
@@ -246,12 +250,9 @@ function User() {
                 <StyledTableRow key={user.UserID}>
                   <StyledTableCell>
                     <div className="flex items-center">
-                     
                       <span>{`${user.FirstName} ${user.LastName}`}</span>
                     </div>
                   </StyledTableCell>
-
-                  <StyledTableCell>{user.PhoneNumber}</StyledTableCell>
                   <StyledTableCell>
                     <span
                       className={`inline-block min-w-[100px] text-center py-1 px-3 rounded-full text-sm font-medium ${getRoleColor(
@@ -261,10 +262,8 @@ function User() {
                       {user.RoleName}
                     </span>
                   </StyledTableCell>
-                  <StyledTableCell>
-                 India
-                  </StyledTableCell>
-
+                  <StyledTableCell>{user.CountryName}</StyledTableCell>
+                  <StyledTableCell>{user.Function}</StyledTableCell>
                   <StyledTableCell colSpan={2}>
                     <div className="flex space-x-2">
                       <button

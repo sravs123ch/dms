@@ -163,8 +163,8 @@ const Login = () => {
 
         // Wait for both data fetching operations to complete
         await Promise.all([
-          fetchApiData(),
-          fetchAndStoreStoresData(),
+          // fetchApiData(),
+          // fetchAndStoreStoresData(),
           // fetchUserDetails(),
         ]);
 
@@ -182,9 +182,9 @@ const Login = () => {
       console.error("Login error:", error);
       setError("An error occurred during login");
     } finally {
-      // setTimeout(() => {
-      //   setIsLoading(false);
-      // }, 10000); // 5 seconds delay
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 10000); // 5 seconds delay
     }
   };
 
@@ -245,7 +245,7 @@ const Login = () => {
               {features.map((feature, index) => (
                 <div
                   key={index}
-                  className="flex items-start space-x-4 bg-[#8B4513]/15 hover:bg-[#8B4513]/25 rounded-lg p-4 transition-all duration-300 backdrop-blur-sm"
+                  className="flex items-start space-x-4 bg-[#8B4513]/35 hover:bg-[#8B4513]/25 rounded-lg p-4 transition-all duration-300 backdrop-blur-sm"
                 >
                   <div className="text-white text-2xl shrink-0">
                     {feature.icon}

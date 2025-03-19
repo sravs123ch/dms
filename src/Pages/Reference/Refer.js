@@ -52,6 +52,7 @@ function Stores() {
 
   const getAllReferences = async (pageNum, pageSize, search = "") => {
     try {
+      const token=localStorage.getItem("token");
       const response = await axios.get(GetAllReference, {
         params: {
           UserID: 1,
@@ -59,6 +60,10 @@ function Stores() {
           pageSize: pageSize,
           SearchText: search, // Changed `searchName` to `search` for consistency
         },
+        headers:{
+          Authorization:`Bearer ${token}`,
+          "Content-Type": "application/json",
+        }
       });
 
       return {

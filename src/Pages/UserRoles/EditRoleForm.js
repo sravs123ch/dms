@@ -22,132 +22,48 @@ const EditRoleForm = () => {
   const [successMessage, setSuccessMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Indicates loading during form submission
 
-  const { storesData } = useContext(DataContext);
-  const [stores, setStores] = useState([]);
-  useEffect(() => {
-    if (storesData) {
-      setStores(storesData || []);
-    }
-  }, [storesData]);
-  // `${GETORDERBYID_API}/${orderId}`
-
-    // Initialize state based on localStorage value
-      const [isExpanded, setIsExpanded] = useState(() => {
-       const storedCollapsed = localStorage.getItem('navbar-collapsed');
-       return storedCollapsed !== 'true'; // Default to expanded if not set
-     });
-   
-     // Update state when localStorage value changes
-     useEffect(() => {
-       const handleStorageChange = () => {
-         const storedCollapsed = localStorage.getItem('navbar-collapsed');
-         setIsExpanded(storedCollapsed !== 'true'); // Set expanded if 'navbar-collapsed' is not 'true'
-       };
-   
-       // Add event listener for storage changes
-       window.addEventListener('storage', handleStorageChange);
-   
-       // Cleanup event listener on component unmount
-       return () => {
-         window.removeEventListener('storage', handleStorageChange);
-       };
-     }, []);
-   
-
+    
   // Fetch role permissions and categorize them by PermissionModule
-  // useEffect(() => {
-  //   const fetchRolePermissions = async () => {
-  //     setLoading(true); // Start loading animation when API call starts
-  //     try {
-  //       const response = await axios.get(
-  //         `${FETCH_PERMISSION_URL_BY_ROLEID}/${roleId}?storeId=${storeId}`
-  //       );
-
-  //       const data = response.data;
-  //       const categorizedPermissions = {};
-
-  //       if (data && Array.isArray(data)) {
-  //         data.forEach((permission) => {
-  //           const module = permission.PermissionModule; // Use PermissionModule from the response
-  //           if (!categorizedPermissions[module]) {
-  //             categorizedPermissions[module] = [];
-  //           }
-  //           categorizedPermissions[module].push({
-  //             ID: permission.PermissionId,
-  //             Name: permission.PermissionName,
-  //             IsChecked: permission.IsChecked,
-  //           });
-  //         });
-  //       }
-  //       setPermissionsByModule(categorizedPermissions);
-  //     } catch (err) {
-  //       setError("Failed to fetch role permissions");
-  //     } finally {
-  //       setLoading(false); // Stop loading animation when API call is finished
-  //     }
-  //   };
-
-  //   fetchRolePermissions();
-  // }, [roleId, storeId]);
-
   useEffect(() => {
-    const fetchPermissions = async () => {
+    const fetchRolePermissions = async () => {
+      setLoading(true); // Start loading animation when API call starts
+      const token=localStorage.getItem("token");
       try {
-        setLoading(true);
-
-        const staticPermissions = [
-          // Menu Management
-          { ID: 90, Module: "Menu Management", Name: "Dashboard", Code: "ACCESS_DASBOARD", IsChecked: false },
-          { ID: 101, Module: "Menu Management", Name: "Users", Code: "ACCESS_USERS", IsChecked: false },
-          { ID: 102, Module: "Menu Management", Name: "UserRoles", Code: "ACCESS_USERROLES", IsChecked: false },
-          { ID: 103, Module: "Menu Management", Name: "View Project Type", Code: "VIEW_PROJECT_TYPE", IsChecked: false },
-          { ID: 104, Module: "Menu Management", Name: "View Reference", Code: "ACCESS_REFERENCES", IsChecked: false },
-        
-          // User Management
-          { ID: 201, Module: "User Management", Name: "Add User", Code: "ADD_USER", IsChecked: false },
-          { ID: 202, Module: "User Management", Name: "Edit User", Code: "EDIT_USER", IsChecked: false },
-          { ID: 203, Module: "User Management", Name: "Delete User", Code: "DELETE_USER", IsChecked: false },
-          { ID: 204, Module: "User Management", Name: "View Users", Code: "VIEW_USERS", IsChecked: false },
-        
-          // Role Management
-          { ID: 301, Module: "Role Management", Name: "Add Role", Code: "ADD_ROLE", IsChecked: false },
-          { ID: 302, Module: "Role Management", Name: "Edit Role", Code: "EDIT_ROLE", IsChecked: false },
-          { ID: 303, Module: "Role Management", Name: "Delete Role", Code: "DELETE_ROLE", IsChecked: false },
-          { ID: 304, Module: "Role Management", Name: "View Roles", Code: "VIEW_ROLES", IsChecked: false },
-        
-          // Project Type Management
-          { ID: 401, Module: "Project Type Management", Name: "Add Project Type", Code: "ADD_PROJECT_TYPE", IsChecked: false },
-          { ID: 402, Module: "Project Type Management", Name: "Edit Project Type", Code: "EDIT_PROJECT_TYPE", IsChecked: false },
-          { ID: 403, Module: "Project Type Management", Name: "Delete Project Type", Code: "DELETE_PROJECT_TYPE", IsChecked: false },
-          { ID: 404, Module: "Project Type Management", Name: "View Project Types", Code: "VIEW_PROJECT_TYPES", IsChecked: false },
-        
-          // Reference Management
-          { ID: 501, Module: "Reference Management", Name: "Add Reference", Code: "ADD_REFERENCE", IsChecked: false },
-          { ID: 502, Module: "Reference Management", Name: "Edit Reference", Code: "EDIT_REFERENCE", IsChecked: false },
-          { ID: 503, Module: "Reference Management", Name: "Delete Reference", Code: "DELETE_REFERENCE", IsChecked: false },
-          { ID: 504, Module: "Reference Management", Name: "View References", Code: "VIEW_REFERENCES", IsChecked: false },
-        ];
-      
-        
-        // Categorizing permissions by module
-        const categorizedPermissions = {};
-        staticPermissions.forEach((permission) => {
-          if (!categorizedPermissions[permission.Module]) {
-            categorizedPermissions[permission.Module] = [];
+        const response = await axios.get(
+          `${FETCH_PERMISSION_URL_BY_ROLEID}/${roleId}`,{
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
           }
-          categorizedPermissions[permission.Module].push(permission);
-        });
+        );
 
+        const data = response.data;
+        const categorizedPermissions = {};
+
+        if (data && Array.isArray(data)) {
+          data.forEach((permission) => {
+            const module = permission.PermissionModule; // Use PermissionModule from the response
+            if (!categorizedPermissions[module]) {
+              categorizedPermissions[module] = [];
+            }
+            categorizedPermissions[module].push({
+              ID: permission.PermissionId,
+              Name: permission.PermissionName,
+              IsChecked: permission.IsChecked,
+            });
+          });
+        }
         setPermissionsByModule(categorizedPermissions);
       } catch (err) {
-        setError("Failed to fetch permissions");
+        setError("Failed to fetch role permissions");
       } finally {
-        setLoading(false);
+        setLoading(false); // Stop loading animation when API call is finished
       }
     };
 
-    fetchPermissions();
-  }, []);
+    fetchRolePermissions();
+  }, [roleId]);
+
   const handleClose = () => {
     navigate("/RoleUser");
   };
@@ -185,12 +101,11 @@ const EditRoleForm = () => {
     const payload = {
       roleId,
       roleName: updatedRoleName,
-      storeId: updatedStoreId,
       permissions: updatedPermissions,
     };
     const validateRoleDataSubmit = () => {
       if (!payload.roleName) return "Role Name is required.";
-      if (!payload.storeId) return "Store ID is required.";
+     
     };
     const validationError = validateRoleDataSubmit();
     if (validationError) {
@@ -217,9 +132,15 @@ const EditRoleForm = () => {
 
     try {
       setIsLoading(true); // Start loading animation during form submission
+      const token=localStorage.getItem("token");
       const response = await axios.post(
-        `${CREATE_OR_UPDATE_ROLE_URL}?storeId=${storeId}`,
-        payload
+        `${CREATE_OR_UPDATE_ROLE_URL}`,
+        payload,{
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json", // Ensure correct content type
+          },
+        }
       );
 
       toast.success("Role updated successfully!");
@@ -237,13 +158,7 @@ const EditRoleForm = () => {
   if (loading || isLoading) return <LoadingAnimation />;
   if (error) return <div>{error}</div>;
 
-  const storeOptions = stores.map((store) => ({
-    value: store.StoreID,
-    label: store.StoreName,
-  }));
-  const handleStoreChange = (selectedOption) => {
-    setUpdatedStoreId(selectedOption.value);
-  };
+
 
   return (
     // <div className="px-4 sm:px-6 lg:px-8 pt-4 ml-10 lg:ml-72 w-auto">

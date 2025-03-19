@@ -124,7 +124,7 @@ const DocumentsList = () => {
   };
 
   const handleAddDocumentClick = () => {
-    setIsModalOpen(true);
+    navigate("/add-document/new");
   };
 
   const handleCloseModal = () => {
@@ -268,18 +268,22 @@ const DocumentsList = () => {
     navigate("/documentsDetails");
   };
 
-  const filteredDocuments = [...staticDocuments, ...uploadedDocuments].filter((doc) => {
-    if (!selectedStatus || selectedStatus === "All") return true; // Show all if no status is selected or "All" is selected
-    return doc.status === selectedStatus;
-  });
+  const handleEdit = (documentId) => {
+    navigate(`/add-document/${documentId}`);
+  };
+
+  const filteredDocuments = [...staticDocuments, ...uploadedDocuments].filter(
+    (doc) => {
+      if (!selectedStatus || selectedStatus === "All") return true; // Show all if no status is selected or "All" is selected
+      return doc.status === selectedStatus;
+    }
+  );
   return (
     <div className="main-container">
       <div className="max-w-7xl mx-auto">
         {/* Header Section */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
-          <h2 className="heading">
-            Documents
-          </h2>
+          <h2 className="heading">Documents</h2>
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
             <button
               onClick={handleAddDocumentClick}
@@ -400,6 +404,7 @@ const DocumentsList = () => {
                     <FaEye className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                   </button>
                   <button
+                    onClick={() => handleEdit(doc.id)}
                     className="p-1.5 sm:p-2 text-[#8B4513] hover:bg-[#8B4513]/10 rounded-lg transition-colors duration-300"
                     title="Edit"
                   >

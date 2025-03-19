@@ -1,23 +1,25 @@
-
 import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FaPlus, FaTable } from "react-icons/fa";
+import { FaPlus, FaTable, FaEdit, FaTrash } from "react-icons/fa";
 import { IoIosSearch } from "react-icons/io";
 import { AiOutlineEdit } from "react-icons/ai";
 import { MdOutlineCancel } from "react-icons/md";
 import { Combobox } from "@headlessui/react";
 import Datepicker from "react-tailwindcss-datepicker";
-import { getProjects, deleteProjectType } from "../../Constants/apiRoutes";
+import {
+  getProjects,
+  deleteProjectType,
+  updateProject,
+} from "../../Constants/apiRoutes";
 import { CheckIcon, ChevronUpDownIcon } from "@heroicons/react/20/solid";
-import { toast, ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from "react-toastify";
 import { IoEllipsisHorizontalCircleSharp } from "react-icons/io5";
 import LoadingAnimation from "../../Components/Loading/LoadingAnimation";
-import 'react-toastify/dist/ReactToastify.css';
-import { IoEllipsisVertical } from 'react-icons/io5'; // Add this import
+import "react-toastify/dist/ReactToastify.css";
+import { IoEllipsisVertical } from "react-icons/io5";
 
 const ProjectTable = () => {
-
   const [page, setPage] = useState(0);
   const dropdownRef = useRef(null);
   const [rowsPerPage, setRowsPerPage] = useState(9);
@@ -25,21 +27,31 @@ const ProjectTable = () => {
   const [loading, setLoading] = useState(false);
   const [selectedStore, setSelectedStore] = useState(null);
   const [value, setValue] = useState(null);
-  const storesData = [{ StoreID: 1, StoreName: "Store 1" }, { StoreID: 2, StoreName: "Store 2" }];
+  const storesData = [
+    { StoreID: 1, StoreName: "Store 1" },
+    { StoreID: 2, StoreName: "Store 2" },
+  ];
   const stores = storesData;
   const searchName = "";
   const searchItems = (value) => console.log("Searching for:", value);
   const [projects, setProjects] = useState([]);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [paginatedData, setPaginatedData] = useState([]);
   const navigate = useNavigate();
+  const [editingProjectId, setEditingProjectId] = useState(null);
+  const [editingStatus, setEditingStatus] = useState("");
+  const [editingName, setEditingName] = useState("");
+
   const handleCreateProject = () => {
     navigate("/ProjectCreation");
   };
-  const handleExportOrder = () => alert("Export Order functionality not implemented.");
-  const handleEditProject = (ProjectTypeID) => {
-    navigate(`/ProjectCreation/${ProjectTypeID}`)
-  }
+  const handleExportOrder = () =>
+    alert("Export Order functionality not implemented.");
+  const handleEditProject = (project) => {
+    setEditingProjectId(project.ProjectTypeID);
+    setEditingStatus(project.Status);
+    setEditingName(project.ProjectTypeName);
+  };
   const handleChangePage = (event, newPage) => setPage(newPage);
   const handleChangeRowsPerPage = (event) => {
     setRowsPerPage(parseInt(event.target.value, 10));
@@ -49,14 +61,18 @@ const ProjectTable = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       setLoading(true);
+      const token = localStorage.getItem("token");
       try {
-        const response = await axios.get(
-          getProjects
-        );
-        setProjects(response.data.data); // Set the response directly
+        const response = await axios.get(getProjects, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setProjects(response.data.data);
       } catch (error) {
         console.error("Error fetching project data:", error);
-      }finally {
+      } finally {
         setLoading(false);
       }
     };
@@ -64,23 +80,27 @@ const ProjectTable = () => {
   }, [refresh]);
 
   useEffect(() => {
-    // Filter the projects based on the search query
-    const filteredProjects = projects.filter(project =>
-      (project.ProjectTypeName && project.ProjectTypeName.replace(/"/g, '').toLowerCase().includes(searchQuery.toLowerCase())) ||
-      (project.ProjectTypeID && project.ProjectTypeID.toString().toLowerCase().includes(searchQuery.toLowerCase()))
+    const filteredProjects = projects.filter(
+      (project) =>
+        (project.ProjectTypeName &&
+          project.ProjectTypeName.toLowerCase().includes(
+            searchQuery.toLowerCase()
+          )) ||
+        (project.ProjectTypeID &&
+          project.ProjectTypeID.toString()
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()))
     );
 
-    // Paginate the filtered projects
-    const paginatedData = filteredProjects.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-    // Set the paginated data to the state
+    const paginatedData = filteredProjects.slice(
+      page * rowsPerPage,
+      page * rowsPerPage + rowsPerPage
+    );
     setPaginatedData(paginatedData);
-  }, [searchQuery, projects, page, rowsPerPage]); // Only run when any of these change
+  }, [searchQuery, projects, page, rowsPerPage]);
 
-
-  // Handle search input change
   const handleSearchChange = (e) => {
-    setSearchQuery(e.target.value); // Update searchQuery state
+    setSearchQuery(e.target.value);
   };
   const handleClickOutside = (event) => {
     if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -96,11 +116,13 @@ const ProjectTable = () => {
   }, []);
   const handleDeleteProject = async (ProjectTypeID) => {
     setLoading(true);
+    const token = localStorage.getItem("token");
     try {
       const response = await fetch(`${deleteProjectType}/${ProjectTypeID}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -117,22 +139,25 @@ const ProjectTable = () => {
           draggable: true,
           progress: undefined,
         });
-        setRefresh(prev => !prev);  // Refresh the data if necessary
+        setRefresh((prev) => !prev); // Refresh the data if necessary
       } else {
         // Display error toast if deletion fails
-        toast.error(result.message || `Failed to delete project with ID ${ProjectTypeID}`, {
-          position: "top-right",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-        });
+        toast.error(
+          result.message || `Failed to delete project with ID ${ProjectTypeID}`,
+          {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+          }
+        );
       }
     } catch (error) {
       // Handle any unexpected errors during the request
-      console.error('Error:', error);
+      console.error("Error:", error);
       toast.error("An error occurred while deleting the project", {
         position: "top-right",
         autoClose: 5000,
@@ -150,14 +175,54 @@ const ProjectTable = () => {
   const toggleMenu = (projectTypeID) => {
     setActiveMenu(activeMenu === projectTypeID ? null : projectTypeID);
   };
-  const [isExpanded, setIsExpanded] = useState(() => {
-       const storedCollapsed = localStorage.getItem('navbar-collapsed');
-       return storedCollapsed !== 'true'; // Default to expanded if not set
-     });
+
+  const handleSaveProject = async (projectTypeID) => {
+    setLoading(true);
+    const token = localStorage.getItem("token");
+    try {
+      const response = await axios.put(
+        `${updateProject}/${projectTypeID}`,
+        { Status: editingStatus, ProjectTypeName: editingName },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+     
+         toast.success(response.data.message || "Project added successfully!", {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        setRefresh((prev) => !prev);
+      
+    } catch (error) {
+      console.error("Error updating project:", error);
+      toast.error("An error occurred while updating the project.");
+    } finally {
+      setLoading(false);
+      setEditingProjectId(null);
+      setEditingStatus("");
+      setEditingName("");
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingProjectId(null);
+    setEditingStatus("");
+    setEditingName("");
+  };
+
   return (
-    // <div ref={dropdownRef} className="main-container">
     <div ref={dropdownRef} className={`main-container`}>
-      <ToastContainer />{loading && <LoadingAnimation />}
+      <ToastContainer />
+      {loading && <LoadingAnimation />}
       <div className="body-container">
         <h2 className="heading">Projects</h2>
 
@@ -175,8 +240,6 @@ const ProjectTable = () => {
             </li>
           </ul>
         </div>
-
-
       </div>
       <div className="flex flex-wrap justify-end gap-2 mt-2">
         {/* Container for centering search box */}
@@ -199,74 +262,102 @@ const ProjectTable = () => {
           </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {paginatedData.map((project) => (
-          <div
-            key={project.projectTypeID}
-            className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col justify-between transition-transform transform hover:scale-105 h-full"
-          >
-            {/* Image Section */}
-            <div className="relative">
-              <img
-                src={project.FileUrl || "/placeholder.jpg"}
-                alt={project.ProjectTypeName}
-                className="w-full h-48 object-cover"
-              />
-              {/* Dropdown Menu */}
-              {activeMenu === project.ProjectTypeID && (
+
+<div className="grid grid-cols-1 mt-4 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  {paginatedData.map((project) => (
+    <div
+      key={project.ProjectTypeID}
+      className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col justify-between transition-transform transform hover:scale-105 h-full"
+    >
+      <div className="p-4 flex-grow flex items-center justify-between">
+        {/* Left: Project Name (Editable in Edit Mode) */}
+        <div className="flex items-center">
+          {editingProjectId === project.ProjectTypeID ? (
+            <input
+              type="text"
+              value={editingName}
+              onChange={(e) => setEditingName(e.target.value)}
+              className="border rounded-md p-1 text-lg font-semibold text-gray-900"
+            />
+          ) : (
+            <h3 className="text-lg font-semibold text-gray-900 truncate">
+              {project.ProjectTypeName || "Unnamed Project"}
+            </h3>
+          )}
+        </div>
+
+        {/* Right: Status, Actions (Edit, Delete, Save, Cancel) */}
+        <div className="flex items-center space-x-4">
+          {editingProjectId === project.ProjectTypeID ? (
+            <>
+              {/* Status Toggle */}
+              <div
+                onClick={() =>
+                  setEditingStatus((prevStatus) =>
+                    prevStatus === "Active" ? "Inactive" : "Active"
+                  )
+                }
+                className={`relative w-14 h-6 rounded-full cursor-pointer transition ${
+                  editingStatus === "Active" ? "bg-green-500" : "bg-red-500"
+                }`}
+              >
                 <div
-                  className="absolute top-28 right-3 bg-white shadow-md rounded-md z-10">
-                  <ul className="text-sm text-gray-700">
-                    <li
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => handleEditProject(project.ProjectTypeID)}
-                    >
-                      Edit
-                    </li>
-                    <li
-                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      onClick={() => handleDeleteProject(project.ProjectTypeID)}
-                    >
-                      Delete
-                    </li>
-                  </ul>
-                </div>
-              )}
-            </div>
-
-            {/* Content Section */}
-            <div className="p-4 flex-grow">
-              <div className="flex items-center justify-between">
-                {/* Project Name */}
-                <h3 className="text-lg font-semibold text-gray-900 truncate">
-                  {(project.ProjectTypeName || "Unnamed Project").replace(/['"]/g, '')}
-                </h3>
-                {/* Status Section */}
-                <div className="flex items-center space-x-2">
-                  <span
-                    className={`w-3 h-3 rounded-full ${project.Status === "Active" ? "bg-green-600" : "bg-red-600"}`}
-                  ></span>
-                  <p
-                    className={`text-sm font-semibold ${project.Status === "Inactive" ? "text-red-600" : "text-green-600"}`}
-                  >
-                    {project.Status}
-                  </p>
-                  <button
-                    className="text-gray-500 text-2xl cursor-pointer focus:outline-none p-0"
-                    onClick={() => toggleMenu(project.ProjectTypeID)}
-                  >
-                    <IoEllipsisVertical className="h-5 w-5" />
-                  </button>
-                </div>
+                  className={`absolute top-1/2 left-1 transform -translate-y-1/2 w-5 h-5 bg-white rounded-full shadow-md transition-transform ${
+                    editingStatus === "Active" ? "translate-x-8" : "translate-x-0"
+                  }`}
+                ></div>
               </div>
-            </div>
 
+              {/* Save & Cancel Buttons */}
+              <button
+                onClick={() => handleSaveProject(project.ProjectTypeID)}
+                className="text-green-600"
+              >
+                Save
+              </button>
+              <button onClick={handleCancelEdit} className="text-red-600">
+                Cancel
+              </button>
+            </>
+          ) : (
+            <>
+              {/* Status Indicator */}
+              <span
+                className={`w-3 h-3 rounded-full ${
+                  project.Status === "Active" ? "bg-green-600" : "bg-red-600"
+                }`}
+              ></span>
+              <p
+                className={`text-sm font-semibold ${
+                  project.Status === "Inactive" ? "text-red-600" : "text-green-600"
+                }`}
+              >
+                {project.Status}
+              </p>
 
-
-          </div>
-        ))}
+              {/* Edit & Delete Buttons */}
+              <button
+                className="p-1.5 sm:p-2 text-[#8B4513] hover:bg-[#8B4513]/10 rounded-lg transition-colors duration-300"
+                title="Edit"
+                onClick={() => handleEditProject(project)}
+              >
+                <FaEdit className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+              <button
+                className="p-1.5 sm:p-2 text-[#8B4513] hover:bg-red-50 rounded-lg transition-colors duration-300"
+                title="Delete"
+                onClick={() => handleDeleteProject(project.ProjectTypeID)}
+              >
+                <FaTrash className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+            </>
+          )}
+        </div>
       </div>
-      {/* Pagination */}
+    </div>
+  ))}
+</div>
+
       <div className="flex justify-end mt-4">
         <button
           disabled={page === 0}

@@ -30,9 +30,16 @@ const ReferenceSubReferenceForm = ({onClose}) => {
   useEffect(() => {
     const fetchReferences = async () => {
       try {
+        const token=localStorage.getItem("token");
         const response = await axios.get(
-
-          GetAllParentReference
+          GetAllParentReference,
+          {
+            headers:{
+              Authorization:`Bearer ${token}`,
+              "Content-Type": "application/json",
+            }
+          }
+        
         );
 
         // Extract the data array
@@ -58,8 +65,14 @@ const ReferenceSubReferenceForm = ({onClose}) => {
     // Fetch reference data only if the referenceId is not "new"
     if (referenceId && referenceId !== "new") {
       const fetchReferences = async () => {
+        const token=localStorage.getItem("token");
         try {
-          const response = await axios.get(`${GetReferenceById}/${referenceId}`);
+          const response = await axios.get(`${GetReferenceById}/${referenceId}`,{
+            headers:{
+              Authorization:`Bearer ${token}`,
+              "Content-Type": "application/json",
+            }
+          });
           const fetchedData = response.data.data;
           setReferNames(fetchedData.name);
           setIsActive(fetchedData.isActive);
@@ -84,7 +97,7 @@ const ReferenceSubReferenceForm = ({onClose}) => {
   const handleSave = async () => {
     // Use the parentId from the selectedReference or fallback to the one fetched earlier
     const resolvedParentId = selectedReference?.id || parentId || 0;
-
+    const token=localStorage.getItem("token");
     // Data to be sent to the API
     const requestData = {
       name: referNames,
@@ -100,11 +113,9 @@ const ReferenceSubReferenceForm = ({onClose}) => {
         response = await axios.post(createParentOrChindreference, requestData, {
           headers: {
             "Content-Type": "application/json",
+            Authorization:`Bearer ${token}`,
           },
         });
-
-        // Log the response data to debug
-        console.log(response.data);
 
         // Check for success response
         if (response.data.success) {
@@ -120,12 +131,10 @@ const ReferenceSubReferenceForm = ({onClose}) => {
           {
             headers: {
               "Content-Type": "application/json",
+              Authorization:`Bearer ${token}`,
             },
           }
         );
-        // Log the response data to debug
-        console.log(response.data);
-
         if (response.data.success) {
           toast.success("Reference updated successfully!");
         } else {

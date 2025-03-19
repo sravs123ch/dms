@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Navigation from "./Navigation/navbar";
-import Login from "./Pages/Login/login";
+import Login from "./Pages/Login/Login";
 import ForgotPassword from "./Pages/Login/forgotpassword";
 import ResetPassword from "./Pages/Login/ResetPassword";
 import { LoadingProvider } from "./Context/LoadingContext";
@@ -26,6 +26,8 @@ import Referenceform from "./Pages/Reference/Referform";
 import { ReferenceProvider } from "./Context/ReferContext";
 import Project from "./Pages/ProjectType/ProjectList";
 import ProjectCreation from "./Pages/ProjectType/Project";
+import Restricted from "./Pages/Unauth/Restricted";
+import AddDocument from "./Pages/Documents/AddDocument";
 
 const App = () => {
   return (
@@ -33,8 +35,8 @@ const App = () => {
       <UserProvider>
         <DataProvider>
           <RoleProvider>
-          <ReferenceProvider>
-            <AppWithNavigation />
+            <ReferenceProvider>
+              <AppWithNavigation />
             </ReferenceProvider>
           </RoleProvider>
         </DataProvider>
@@ -84,7 +86,9 @@ const AppWithNavigation = () => {
           <Route
             path="/users"
             element={
-              <ProtectedRoute requiredPermission={PERMISSIONS.VIEW_USERS}>
+              <ProtectedRoute
+              requiredPermission={PERMISSIONS.VIEW_USERS}
+              >
                 <Users />
               </ProtectedRoute>
             }
@@ -93,26 +97,24 @@ const AppWithNavigation = () => {
             path="/userform/:userId"
             element={
               <ProtectedRoute
-                // allowedRoles={[1]}
-                requiredPermission={
-                  PERMISSIONS.ADD_USER ||
-                  PERMISSIONS.EDIT_USER ||
-                  PERMISSIONS.DELETE_USER
-                }
+              requiredPermission={
+                PERMISSIONS.ADD_USER ||
+                PERMISSIONS.EDIT_USER ||
+                PERMISSIONS.DELETE_USER
+              }
               >
                 <UserForm />
               </ProtectedRoute>
             }
           />
-
           <Route
             path="/RoleUser"
             element={
               <ProtectedRoute
-                // allowedRoles={[1]}
-                requiredPermission={
-                  PERMISSIONS.VIEW_USER_ROLES || PERMISSIONS.VIEW_ROLE
-                }
+              // allowedRoles={[1]}
+              requiredPermission={
+                PERMISSIONS.VIEW_ROLE
+              }
               >
                 <RoleUser />
               </ProtectedRoute>
@@ -122,8 +124,8 @@ const AppWithNavigation = () => {
             path="/RoleUserAddform"
             element={
               <ProtectedRoute
-                // allowedRoles={[1]}
-                requiredPermission={PERMISSIONS.ADD_ROLE}
+              // allowedRoles={[1]}
+              requiredPermission={PERMISSIONS.ADD_ROLE}
               >
                 <RoleUserAddForm />
               </ProtectedRoute>
@@ -133,8 +135,8 @@ const AppWithNavigation = () => {
             path="/RoleUserEditform/:roleId"
             element={
               <ProtectedRoute
-                // allowedRoles={[1, 3]}
-                requiredPermission={PERMISSIONS.EDIT_ROLE}
+              // allowedRoles={[1, 3]}
+              requiredPermission={PERMISSIONS.EDIT_ROLE}
               >
                 <RoleUserEditForm />
               </ProtectedRoute>
@@ -144,8 +146,8 @@ const AppWithNavigation = () => {
             path="/documentsDetails"
             element={
               <ProtectedRoute
-                // allowedRoles={[1]}
-                requiredPermission={PERMISSIONS.VIEW_FEEDBACKS}
+              // allowedRoles={[1]}
+              // requiredPermission={PERMISSIONS.VIEW_FEEDBACKS}
               >
                 <DocumentsDetails />
               </ProtectedRoute>
@@ -155,8 +157,8 @@ const AppWithNavigation = () => {
             path="/documentsList"
             element={
               <ProtectedRoute
-                // allowedRoles={[1]}
-                requiredPermission={PERMISSIONS.VIEW_FEEDBACKS}
+              // allowedRoles={[1]}
+              // requiredPermission={PERMISSIONS.VIEW_FEEDBACKS}
               >
                 <DocumentsList />
               </ProtectedRoute>
@@ -188,65 +190,68 @@ const AppWithNavigation = () => {
               </ProtectedRoute>
             }
           />
-            <Route
-                                path="/Reference"
-                                element={
-                                  <ProtectedRoute
-                                    // allowedRoles={[1]}
-                                    requiredPermission={PERMISSIONS.VEIW_REFERENCES}
-                                  >
-                                  <Reference />
-                                  </ProtectedRoute>
-                                }
-                              />
-                               <Route
-                                // path="/OrdersAdd/:orderId"
-                                path="/Referenceform/:ReferId"
-                                element={
-                                  <ProtectedRoute
-                                    // allowedRoles={[1]}
-                                    requiredPermission={
-                                      PERMISSIONS.ADD_STORE ||
-                                      PERMISSIONS.EDIT_STORE ||
-                                      PERMISSIONS.DELETE_STORE
-                                    }
-                                  >
-                                    <Referenceform />
-                                  </ProtectedRoute>
-                                }
-                              />
-                                <Route
-                                path="/ProjectCreation"
-                                element={
-                                  <ProtectedRoute
-                                    // allowedRoles={[1]}
-                                    requiredPermission={PERMISSIONS.ADD_PROJECTYPE}
-                                  >
-                                    <ProjectCreation />
-                                  </ProtectedRoute>
-                                }
-                              /> <Route
-                              path="/Project"
-                              element={
-                                <ProtectedRoute
-                                  // allowedRoles={[1]}
-                                  requiredPermission={PERMISSIONS.VIEW_PROJECTTYPE}
-                                >
-                                  <Project />
-                                </ProtectedRoute>
-                              }
-                            />
-                             <Route
-                              path="/ProjectCreation/:ProjectTypeID"
-                              element={
-                                <ProtectedRoute
-                                  // allowedRoles={[1]}
-                                  requiredPermission={PERMISSIONS.EDIT_PROJECTYPE}
-                                >
-                                  <ProjectCreation />
-                                </ProtectedRoute>
-                              }
-                            />
+          <Route
+            path="/Reference"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              requiredPermission={PERMISSIONS.VEIW_REFERENCES}
+              >
+                <Reference />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            // path="/OrdersAdd/:orderId"
+            path="/Referenceform/:ReferId"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              requiredPermission={
+                PERMISSIONS.ADD_REFERENCES ||
+                PERMISSIONS.EDIT_REFERENCES ||
+                PERMISSIONS.DELETE_REFERENCES
+              }
+              >
+                <Referenceform />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ProjectCreation"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              requiredPermission={PERMISSIONS.ADD_PROJECT_TYPE}
+              >
+                <ProjectCreation />
+              </ProtectedRoute>
+            }
+          />{" "}
+          <Route
+            path="/Project"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              requiredPermission={PERMISSIONS.VIEW_PROJECT_TYPE}
+              >
+                <Project />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ProjectCreation/:ProjectTypeID"
+            element={
+              <ProtectedRoute
+              // allowedRoles={[1]}
+              requiredPermission={PERMISSIONS.EDIT_PROJECT_TYPE}
+              >
+                <ProjectCreation />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="/unauthorized" element={<Restricted />} />
+          <Route path="/add-document/:documentId" element={<AddDocument />} />
         </Routes>
       </main>
     </div>

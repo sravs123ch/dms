@@ -2,6 +2,17 @@ export const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 // export const LOGIN = '${BASE_URL}/auth/login';
 export const LOGIN = `${BASE_URL}/auth/login`;
+export const UpdatePassword =`${BASE_URL}/auth/updatePassword`;
+export const ForgotPassword =`${BASE_URL}/auth/forgotPassword`;
+
+export const createTenantSettings=`${BASE_URL}/admin/createTenantSettings`;
+export const updateTenantSettings=`${BASE_URL}/admin/updateTenantSettings`;
+export const getTenantSettings=`${BASE_URL}/admin/getTenantSettings`;
+
+export const CREATEORUPDATE_USERS_API = `${BASE_URL}/admin/createOrUpdateUser`;
+export const GETALLUSERS_API = `${BASE_URL}/admin/getAllUsers`;
+export const GETALLUSERSBYID_API = `${BASE_URL}/admin/getUserById`;
+export const DELETEUSERSBYID_API = `${BASE_URL}/admin/deleteUser`;
 
 export const CREATEORUPDATE_CUSTOMERS_API = `${BASE_URL}/customers/createOrUpdateCustomer`;
 export const CREATEORUPDATE_CUSTOMERS_ADDRESS_API = `${BASE_URL}/customers/createOrUpdateAddress`;
@@ -12,11 +23,6 @@ export const ORDERBYCUSTOMERID_API = `${BASE_URL}/customers/getOrderByCustomerId
 export const CUSTOMERID_API = `${BASE_URL}/customers/getCustomerByIdWithoutAddress`;
 export const ADDRESS_API = `${BASE_URL}/address/getAddressesByCustomerId`;
 
-export const CREATEORUPDATE_USERS_API = `${BASE_URL}/users/createOrUpdateuser`;
-export const GETALLUSERS_API = `${BASE_URL}/users/getAllUsers`;
-export const GETALLUSERSBYID_API = `${BASE_URL}/users/getUserById`;
-export const DELETEUSERSBYID_API = `${BASE_URL}/users/deleteUser`;
-
 export const CREATEORUPDATE_STORES_API = `${BASE_URL}/stores/createOrUpdatestore`;
 export const GETALLSTORES_API = `${BASE_URL}/stores/getAllStores`;
 export const GETALLSTORESBYID_API = `${BASE_URL}/stores/getstoreById`;
@@ -24,10 +30,36 @@ export const DELETESTORESSBYID_API = `${BASE_URL}/stores/deletestore`;
 export const STOREUSERSBYSTORE_ID_API = `${BASE_URL}/mapstoreusers/mapstoreuser`;
 export const GETALLSTOREUSERSBYSTORE_ID_API = `${BASE_URL}/mapstoreusers/getallmapstoreuser`;
 
-export const CREATEORUPDATE_ROLES_API = `${BASE_URL}/userrole/createOrUpdateRole`;
-export const GETALLROLESS_API = `${BASE_URL}/userrole/getAllRoles`;
-export const GETALLROLESBYID_API = `${BASE_URL}/userrole/getRoleById`;
-export const DELETEROLESBYID_API = `${BASE_URL}/userrole/deleteRole`;
+export const CREATEORUPDATE_ROLES_API = `${BASE_URL}/admin/createOrUpdateRole`;
+export const GETALLROLESS_API = `${BASE_URL}/admin/getAllRoles`;
+export const GETALLROLESBYID_API = `${BASE_URL}/admin/getRoleById`;
+export const DELETEROLESBYID_API = `${BASE_URL}/admin/deleteRole`;
+
+export const GetAllReference=`${BASE_URL}/admin/getAllData`;
+export const createParentOrChindreference=`${BASE_URL}/admin/createParentOrChindreference`;
+export const PostSubReference=`${BASE_URL}/admin/sub-reference`;
+export const GetReferenceById=`${BASE_URL}/admin/getByIdReferences`;
+export const updateParentOrChindreference=`${BASE_URL}/admin/reference`;
+export const GetAllParentReference=`${BASE_URL}/admin/parents`;
+
+export const DeleteReference=`${BASE_URL}/admin/reference`;
+
+export const getProjects=`${BASE_URL}/admin/listProjectTypes`;
+export const createProject=`${BASE_URL}/admin/addProjectType`;
+export const updateProject=`${BASE_URL}/admin/updateProjectType`;
+export const deleteProjectType=`${BASE_URL}/admin/deleteProjectType`;
+export const getProjectTypeById=`${BASE_URL}/admin/getProjectTypeById`;
+
+export const ADD_DOCUMENT_API=`${BASE_URL}/doc/createDocument`;
+export const UPDATE_DOCUMENT_API=`${BASE_URL}/doc/updateDocument`;
+export const GET_DOCUMENT_API=`${BASE_URL}/doc/getDocumentById`;
+export const FETCH_PERMISSION_URL = `${BASE_URL}/admin/getAllPermissions`;
+
+export const FETCH_PERMISSION_URL_BY_ROLEID = `${BASE_URL}/admin/getAllPermissionsByRoleId`;
+
+export const CREATE_OR_UPDATE_ROLE_URL = `${BASE_URL}/admin/createOrUpdateRolePermissions`;
+export const COUNTRIES_API = `${BASE_URL}/admin/getCountries`;
+
 
 export const DELETE_CUSTOMERS_ADDRESS_API = `${BASE_URL}/customers/deleteAddress`;
 
@@ -39,7 +71,7 @@ export const SEARCH_CUSTOMERS = `${BASE_URL}/customers/getCustomerById`;
 
 export const CITIES_API = `${BASE_URL}/cities/getCitiesByState?$filter=StateID eq`;
 export const STATES_API = `${BASE_URL}/cities/getStatesByCountry?$filter=CountryID eq`;
-export const COUNTRIES_API = `${BASE_URL}/cities/getCountries`;
+
 
 export const GETORDERBYID_API = `${BASE_URL}/orders/getOrderById`;
 
@@ -56,11 +88,7 @@ export const GET_MAPSTOREUSERBY_USERID = `${BASE_URL}/mapstoreusers//mapstoreuse
 export const GET_MAPSTORE_USERBYSTOREID = `${BASE_URL}/mapstoreusers/mapstoreuser`;
 export const DELETEMAPSTOREUSER = `${BASE_URL}/mapstoreusers/deleteMapStoreUser`;
 export const GET_ALL_HYSTORYID_API = `${BASE_URL}/orderhistory/order-history/`;
-export const FETCH_PERMISSION_URL = `${BASE_URL}/permissions/getAllPermissions`;
 
-export const FETCH_PERMISSION_URL_BY_ROLEID = `${BASE_URL}/permissions/getAllPermissionsByRoleId`;
-
-export const CREATE_OR_UPDATE_ROLE_URL = `${BASE_URL}/permissions/createOrUpdateRolePermissions`;
 export const ORDER_STATUS_API = `${BASE_URL}/Orderstatus/getAllOrderStatus`;
 export const PAYMENT_REPORT_API = `${BASE_URL}/reports/getPaymentReport`;
 export const CUSTOMER_REPORT_API = `${BASE_URL}/reports/getCustomerReport`;
@@ -78,24 +106,10 @@ export const GET_OVERALL_DATA_FOR_DASHBOARD = `${BASE_URL}/Dashboard/getOverAllD
 export const  UPDATESUBORDERSTATUSAPI  = `${BASE_URL}/orders/updateSubOrderStatus`;
 export const getAllFeedbacksAPI=`${BASE_URL}/Feedback/GetAllFeedBacks`;
 export const getOrderByIdAPI=`${BASE_URL}/orders/createOrderOrUpdate`;
-export const getProjects=`${BASE_URL}/ProjectTypeRoutes/listProjectTypes`;
-export const createProject=`${BASE_URL}/ProjectTypeRoutes/addProjectType`;
-export const updateProject=`${BASE_URL}/ProjectTypeRoutes/updateProjectType`;
-export const deleteProjectType=`${BASE_URL}/ProjectTypeRoutes/deleteProjectType`;
-export const getProjectTypeById=`${BASE_URL}/ProjectTypeRoutes/getProjectTypeById`;
+
 
 export const emailForProduction=`${BASE_URL}/orders/triggerAdvanceMeasurementPaymentEmail`;
 
-export const GetAllReference=`${BASE_URL}/referenceRoutes/getAllData`;
-
-
-export const createParentOrChindreference=`${BASE_URL}/referenceRoutes/createParentOrChindreference`;
-export const PostSubReference=`${BASE_URL}/referenceRoutes/sub-reference`;
-export const GetReferenceById=`${BASE_URL}/referenceRoutes/getByIdReferences`;
-export const updateParentOrChindreference=`${BASE_URL}/referenceRoutes/reference`;
-export const GetAllParentReference=`${BASE_URL}/referenceRoutes/parents`;
-
-export const DeleteReference=`${BASE_URL}/referenceRoutes/reference`;
 
 export const getTasksForUser=`${BASE_URL}/orderhistory/getTasksForUser`;
 
@@ -103,8 +117,6 @@ export const TaskStatusUpdate=`${BASE_URL}/orderhistory/updateProgressStatus`;
 
 
 export const ChatBox=`${BASE_URL}/auth/chat`;
-export const UpdatePassword =`${BASE_URL}/users/updatePassword`;
-export const ForgotPassword =`${BASE_URL}/users/forgotPassword`;
 
 export const VerifyOTP =`${BASE_URL}/users/validateOtp`;
 
@@ -112,9 +124,6 @@ export const ResetPassword =`${BASE_URL}/users/validateOtpAndUpdatePassword`;
 
 export const HolidaysList=`${BASE_URL}/holidayCalender/listHolidays`;
 
-export const createTenantSettings=`${BASE_URL}/Tenant/createTenantSettings`;
-export const updateTenantSettings=`${BASE_URL}/Tenant/updateTenantSettings`;
-export const getTenantSettings=`${BASE_URL}/Tenant/getTenantSettings`;
 
 export const TRIGGER_MAIL=`${BASE_URL}/orders/schedulePreDeliveryNotifications`;
 
